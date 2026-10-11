@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <title>New Disease Research Lab</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #000;
+        color: #00ffff88;
+        font-family: "Chakra Petch", sans-serif;
+        height: 100vh;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .grid-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+          linear-gradient(#00f2ff35 1px, transparent 1px),
+          linear-gradient(90deg, #00f2ff35 1px, transparent 1px);
+        background-size: 80px 80px;
+        z-index: -1;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 100px;
+      }
+      .logo {
+        font-weight: bold;
+        margin-right: 50px;
+        color: #fff;
+      }
+      nav {
+        display: flex;
+        gap: 40px;
+      }
+      .nav-item {
+        cursor: pointer;
+        color: #888;
+      }
+      .nav-item.active {
+        color: #fff;
+        border-bottom: 2px solid #fff;
+        padding-bottom: 5px;
+      }
+
+      #main-content {
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        align-items: start;
+        transition: 0.3s;
+      }
+      h1 {
+        font-size: 5rem;
+        line-height: 0.9;
+        color: #00ffff;
+        margin-bottom: 40px;
+        text-transform: uppercase;
+      }
+      .description {
+        max-width: 800px;
+        font-size: 13px;
+        line-height: 1.6;
+        color: #ccc;
+      }
+      .description p {
+        margin-bottom: 20px;
+      }
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+      .nav-btn {
+        background: transparent;
+        border: 1px solid #fff;
+        color: #fff;
+        padding: 10px 25px;
+        cursor: pointer;
+        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        transition: 0.3s;
+        text-align: center;
+        width: 150px;
+      }
+      .nav-btn:hover {
+        background: #fff;
+        color: #000;
+      }
+      .nav-btn.active {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid #ffffff;
+        color: #ffffff;
+        box-shadow: inset 0 0 10px #ffffff;
+        transform: translateY(2px);
+      }
+
+      .research-layout {
+        display: flex;
+        gap: 50px;
+        align-items: start;
+      }
+      .profile-image {
+        border: 2px solid #00ffff;
+        width: 400px;
+        height: 500px;
+        background: #111;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid-overlay"></div>
+
+    <header>
+      <div class="logo">New Disease Research Lab</div>
+      <nav>
+        <div class="nav-item active" id="nav-overview" onclick="showOverview()">
+          OVERVIEW
+        </div>
+        <div class="nav-item" id="nav-research" onclick="showResearchTeam()">
+          RESEARCH TEAM
+        </div>
+      </nav>
+    </header>
+
+    <main id="main-content">
+      <section class="hero">
+        <h1>DIAGNOSING,<br />THE NEXT<br />BIG TREND</h1>
+        <div class="description">
+          <p>
+            오늘날 미디어는 끊임없이 새로운 정체성을 만들어냅니다. '홍대병'에서
+            시작해 이름 붙여지지 않은 수많은 '힙함'과 '과몰입'까지. 신병
+            연구소는 현대인의 심리와 미디어 트렌드가 결합하여 탄생한 이 시대의
+            '새로운 질환(NEW SYNDROME)'들을 수집하고 분석합니다.
+          </p>
+          <p>
+            우리는 이 '서툰 독특함'을 단순한 증상이 아닌, 남들과 차별화되고 싶은
+            창의적 본능으로 정의합니다. 날것 그대로의 독특한 시각을 정교하게
+            분석하여, 대중의 마음을 움직일 새로운 비주얼과 문화적 전략을
+            도출합니다.
+          </p>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <button class="nav-btn active" onclick="setActive(this)">
+          ABOUT US
+        </button>
+        <button class="nav-btn" onclick="setActive(this)">VISION</button>
+      </aside>
+    </main>
+
+    <script>
+      function setActive(element) {
+        document
+          .querySelectorAll(".nav-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        element.classList.add("active");
+      }
+
+      function showResearchTeam() {
+        const main = document.getElementById("main-content");
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((el) => el.classList.remove("active"));
+        document.getElementById("nav-research").classList.add("active");
+
+        main.innerHTML = `
+          <div class="research-layout">
+            <section>
+                <h1>JUNSEO KIM</h1>
+                <div class="description">
+                    <p>AGE: 28 | DEPARTMENT: AI & HUMAN-COMPUTER INTERACTION</p>
+                    <p>SPECIALIZATION: AI, MACHINE LEARNING, HUMAN BEHAVIOR ANALYSIS</p>
+                </div>
+            </section>
+            <div class="profile-image">
+                <img src="human1.png" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+          </div>
+          <aside class="sidebar"></aside>
+        `;
+      }
+
+      function showOverview() {
+        location.reload();
+      }
+    </script>
+  </body>
+</html>

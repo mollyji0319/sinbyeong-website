@@ -1,0 +1,697 @@
+@font-face {
+  font-family: "SEBANG Gothic Bold";
+  src: url("SEBANG Gothic OTF Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+:root {
+  --accent: #ff008c;
+}
+
+/* 1. 전체 기본 본문은 산세리프 계열 적용 */
+body {
+  margin: 0;
+  overflow: hidden;
+  background-color: #000;
+  color: #fff;
+  font-family: sans-serif;
+  font-weight: 400;
+}
+
+/* 2. 굵은 폰트(세방고딕)를 적용할 태그 및 클래스 통합 정의 */
+strong,
+b,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.info-title,
+.popup-main-title,
+.popup-tag-badge,
+.prescription-sub-badge,
+.info-code-badge,
+.close-btn,
+.info-sub-panel,
+.popup-nav-tabs,
+.prescription-badge,
+.symptom-stage-header,
+.symptom-section-badge {
+  font-family: "SEBANG Gothic Bold", sans-serif !important;
+  font-weight: 700 !important;
+}
+
+/* 배경 그리드 패턴 */
+.grid-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(to right, rgba(255, 0, 127, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 0, 127, 0.14) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 좌측 상단 브랜딩 및 기본 정보 UI */
+#left-branding {
+  position: absolute;
+  top: 30px;
+  left: 90px;
+  width: 650px;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.logo-link {
+  display: inline-block;
+  pointer-events: auto;
+  width: 100px;
+  margin-bottom: 8px;
+}
+
+.logo-img {
+  height: auto;
+  width: 100%;
+  display: block;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.logo-link:hover .logo-img {
+  opacity: 1;
+}
+
+.info-box-container {
+  position: relative;
+  width: 600px;
+  pointer-events: auto;
+}
+
+.info-main-panel {
+  background-color: var(--accent);
+  color: #fff;
+  padding: 10px 15px 20px;
+  position: relative;
+  clip-path: polygon(0 0, 100% 0, 93% 100%, 0 100%);
+  box-sizing: border-box;
+  z-index: 3;
+}
+
+.info-code-badge {
+  position: absolute;
+  top: -15px;
+  right: -40px;
+  background-color: #000;
+  color: #fff;
+  border: 2px solid var(--accent);
+  padding: 8px 18px 9px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  transform: skewX(-30deg);
+  z-index: 2005;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.info-code-badge:hover {
+  transform: skewX(-30deg) scale(1.08);
+  box-shadow: 0 6px 18px rgba(255, 0, 127, 0.4);
+}
+
+.info-title {
+  font-size: 18px;
+  margin-bottom: 6px;
+  margin-top: 3px;
+}
+
+.info-desc {
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 0.95;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  margin-right: 20px;
+}
+
+.info-middle-bg {
+  background-color: #fff;
+  width: 100%;
+  height: 80px;
+  position: relative;
+  margin-top: -70px;
+  clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%);
+  z-index: 1;
+}
+
+.info-sub-panel {
+  background-color: #fff;
+  color: #000;
+  padding: 5px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+  font-size: 14px;
+  width: 150px;
+  position: relative;
+  margin-top: -9.5px;
+  margin-left: -30px;
+  clip-path: polygon(0% 0, 90% 0, 100% 100%, 10% 100%);
+  z-index: 3;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* 점 사이 간격 */
+}
+
+.dot-icon {
+  width: 16px; /* 점 크기 */
+  height: 16px;
+  display: block;
+}
+/* 카드 스택 영역 */
+#panel-container {
+  width: 100vw;
+  height: 100vh;
+  perspective: 2000px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#panel-stack {
+  width: 200px;
+  height: 200px;
+  transform-style: preserve-3d;
+  position: relative;
+  left: 150px;
+}
+
+.panel-wrapper {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 0.3s;
+  cursor: pointer;
+}
+
+.panel {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  border: 1px solid var(--accent);
+  background-color: #111;
+  overflow: hidden;
+  transition:
+    transform 0.6s,
+    filter 0.3s,
+    border-color 0.3s,
+    box-shadow 0.3s;
+  filter: grayscale(1);
+}
+
+.panel-wrapper:hover .panel {
+  filter: grayscale(0);
+  transform: translateX(80px) translateY(-6px) rotateZ(-1.5deg) !important;
+  border-color: #fff;
+  box-shadow: 0 18px 40px rgba(255, 0, 127, 0.35);
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+/* 진단 스캐너 라이트 스윕 - 카드에 마우스를 올리면
+   진료 차트를 훑는 빛줄기가 한 번 지나간다 */
+.panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(
+    115deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.65s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.panel-wrapper:hover .panel::after {
+  left: 130%;
+}
+
+/* 팝업 오버레이 */
+#popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0);
+  z-index: 3000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.35s ease,
+    background 0.35s ease,
+    visibility 0.35s;
+  pointer-events: none;
+}
+
+#popup-overlay.active {
+  visibility: visible;
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.75);
+  pointer-events: auto;
+}
+
+.popup-layout-wrapper {
+  position: relative;
+  width: 980px;
+  height: auto;
+  margin-top: -60px;
+  z-index: 3001;
+  opacity: 0;
+  transform: scale(0.92);
+  transition:
+    opacity 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#popup-overlay.active .popup-layout-wrapper {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.main-panel {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 960px;
+  height: auto;
+  min-height: 300px;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  padding: 30px 40px 35px 45px;
+  z-index: 3;
+  clip-path: polygon(0 0, 100% 0, 91% 100%, 0 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.main-panel-pink-base {
+  position: absolute;
+  top: -40px;
+  left: 12px;
+  width: 990px;
+  height: calc(100% + 60px);
+  min-height: 360px;
+  background-color: var(--accent);
+  z-index: 2;
+  clip-path: polygon(170px 0px, 100% 0px, 90% 100%, 0 100%);
+}
+
+.popup-nav-tabs {
+  position: absolute;
+  top: -29px;
+  left: 200px;
+  display: flex;
+  gap: 25px;
+  z-index: 6;
+  font-size: 15px;
+  color: #fff;
+}
+
+.popup-nav-tab {
+  cursor: pointer;
+  position: relative;
+  padding-bottom: 4px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.popup-nav-tab:hover,
+.popup-nav-tab.active {
+  opacity: 1;
+}
+
+/* 밑줄이 순간적으로 나타나던 것을 자라나는 형태로 변경 */
+.popup-nav-tab::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.popup-nav-tab:hover::after,
+.popup-nav-tab.active::after {
+  width: 100%;
+}
+
+.popup-content-layout {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  height: auto;
+  margin-top: 5px;
+}
+
+/* 카드 이미지 - 팝업이 열릴 때 핑크 커튼이 걷히듯 좌→우로 드러남 */
+.popup-card-img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #111;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.6s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+#popup-overlay.active .popup-card-img {
+  clip-path: inset(0 0 0 0);
+  transition-delay: 0.15s;
+}
+
+/* 우측 텍스트 영역 - 이미지가 드러난 직후 한 번만 조용히 떠오름 */
+.popup-right-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s ease;
+}
+
+#popup-overlay.active .popup-right-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.32s;
+}
+
+.popup-title-area {
+  margin-bottom: 12px;
+}
+
+.popup-main-title {
+  font-size: 22px;
+  color: var(--accent);
+  margin: 0 0 2px 0;
+}
+
+.popup-sub-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ff008c;
+  margin: 0;
+}
+
+.popup-content-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  max-height: none;
+  overflow-y: visible;
+  padding-right: 80px;
+}
+
+.popup-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.popup-tag-badge {
+  background-color: var(--accent);
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.popup-text-val {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #222;
+  margin-top: 3px;
+}
+
+/* 원인 및 증상 탭 전용 스타일 */
+.symptom-layout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 25px;
+}
+
+.symptom-section-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.symptom-section-badge {
+  background-color: var(--accent);
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.symptom-cards-container {
+  display: flex;
+  gap: 15px;
+  flex-grow: 1;
+}
+
+.symptom-pink-card {
+  background-color: #ffd1e8;
+  border-radius: 4px;
+  padding: 18px 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.symptom-card-title {
+  font-size: 14px;
+  color: var(--accent);
+  margin: 0;
+}
+
+.symptom-card-desc {
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: #222;
+  margin: 0;
+}
+
+.symptom-stages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex-grow: 1;
+}
+
+.symptom-stage-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.symptom-stage-header {
+  font-size: 13px;
+  color: var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  padding-bottom: 3px;
+  transition: border-color 0.2s ease;
+}
+
+.symptom-stage-item:hover .symptom-stage-header {
+  border-color: #fff;
+}
+
+.symptom-stage-desc {
+  font-size: 11.5px;
+  color: #222;
+  margin: 0;
+}
+
+/* 확산 양상 및 처방 탭 전용 스타일 */
+.prescription-layout {
+  display: flex;
+  width: 100%;
+  gap: 30px;
+  align-items: flex-start;
+  position: relative;
+  margin-top: 8px;
+}
+
+.prescription-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+}
+
+.prescription-badge-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.prescription-badge {
+  background-color: var(--accent);
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-align: center;
+  display: inline-block;
+}
+
+.prescription-row-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.prescription-sub-badge {
+  background-color: transparent;
+  color: var(--accent);
+  font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: 110px;
+  text-align: left;
+}
+
+.prescription-content-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prescription-people-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin: 10px 0;
+}
+
+.person-icon {
+  width: 32px;
+  height: 48px;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+}
+
+.prescription-people-group:hover .person-icon {
+  transform: translateY(-3px);
+}
+
+.prescription-divider {
+  width: 2px;
+  background-color: var(--accent);
+  align-self: stretch;
+  margin: 0 10px;
+}
+
+.close-btn {
+  position: absolute;
+  top: -15px;
+  right: -40px;
+  width: auto;
+  height: auto;
+  background-color: #000;
+  color: #fff;
+  border: 2px solid var(--accent);
+  padding: 8px 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  letter-spacing: 1px;
+  transform: skewX(-18deg);
+  cursor: pointer;
+  z-index: 2005;
+  transition:
+    background 0.2s,
+    transform 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: #333;
+  transform: skewX(-18deg) scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup-card-img {
+    clip-path: inset(0 0 0 0) !important;
+    transition: none !important;
+  }
+  .popup-right-content {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .panel::after {
+    display: none;
+  }
+  .panel-wrapper:hover .panel {
+    transform: translateX(80px) !important;
+  }
+}

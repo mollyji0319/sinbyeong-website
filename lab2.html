@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        margin: 0;
+        background: #000;
+        overflow: hidden;
+      }
+      #ui {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #fff;
+        z-index: 10;
+        pointer-events: none;
+      }
+      h1 {
+        font-size: 80px;
+        margin: 0;
+        text-transform: uppercase;
+      }
+      .sub {
+        font-size: 16px;
+        color: #aaa;
+        margin-top: 10px;
+        letter-spacing: 2px;
+      }
+      #popup {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: none;
+        background: rgba(0, 0, 0, 0.9);
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        cursor: zoom-out;
+        opacity: 0;
+      }
+      #popup-img {
+        max-width: 70%;
+        max-height: 70%;
+        border-radius: 20px;
+        box-shadow: 0 0 50px rgba(255, 255, 255, 0.3);
+        image-rendering: pixelated; /* 팝업 이미지도 선명하게 */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ui">
+      <h1>VOID</h1>
+      <div class="sub">UNLIMITED TOOLS TO TRANSFORM YOUR HEALTH</div>
+    </div>
+    <div id="popup" onclick="closePopup()"><img id="popup-img" /></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+      const imgs = [
+        "IMG_7411.png",
+        "IMG_7412.png",
+        "IMG_7413.png",
+        "IMG_7414.png",
+        "IMG_7415.png",
+        "IMG_7416.png",
+        "IMG_7417.png",
+        "IMG_7418.png",
+      ];
+
+      const vertexShader = `
+        varying vec2 vUv;
+        void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+      `;
+      const fragmentShader = `
+        uniform sampler2D tDiffuse;
+        uniform float opacity;
+        varying vec2 vUv;
+        void main() {
+          vec2 uv = vUv - 0.5;
+          float d = length(max(abs(uv) - 0.45, 0.0)) / 0.05;
+          if (d > 1.0) discard; 
+          vec4 color = texture2D(tDiffuse, vUv);
+          gl_FragColor = vec4(color.rgb, color.a * opacity);
+        }
+      `;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000,
+      );
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const group = new THREE.Group();
+      const loader = new THREE.TextureLoader();
+
+      for (let i = 0; i < 8; i++) {
+        const tex = loader.load(imgs[i]);
+
+        // [선명도 개선] 픽셀 보간 제거
+        tex.minFilter = THREE.NearestFilter;
+        tex.magFilter = THREE.NearestFilter;
+
+        const uniforms = { tDiffuse: { value: tex }, opacity: { value: 0 } };
+        const size = Math.random() * 6 + 6;
+        const mat = new THREE.ShaderMaterial({
+          uniforms: uniforms,
+          vertexShader: vertexShader,
+          fragmentShader: fragmentShader,
+          transparent: true,
+        });
+
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), mat);
+
+        let idx = i >= 4 ? i + 1 : i;
+        const row = Math.floor(idx / 3);
+        const col = idx % 3;
+
+        const x = (col - 1) * 22 + (Math.random() - 0.5) * 6;
+        const y = (1 - row) * 12 + (Math.random() - 0.5) * 4;
+
+        mesh.position.set(x, y, (Math.random() - 0.5) * 8);
+        mesh.rotation.set(
+          (Math.random() - 0.5) * 0.5,
+          (Math.random() - 0.5) * 0.5,
+          (Math.random() - 0.5) * 0.2,
+        );
+
+        mesh.userData = { id: imgs[i] };
+        group.add(mesh);
+        gsap.to(uniforms.opacity, { value: 1, duration: 2, delay: i * 0.1 });
+      }
+      scene.add(group);
+      camera.position.z = 25;
+
+      window.onmousemove = (e) => {
+        gsap.to(group.rotation, {
+          y: (e.clientX / window.innerWidth - 0.5) * 0.2,
+          x: (e.clientY / window.innerHeight - 0.5) * 0.2,
+          duration: 1,
+        });
+      };
+
+      window.onclick = (e) => {
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(
+          new THREE.Vector2(
+            (e.clientX / window.innerWidth) * 2 - 1,
+            -(e.clientY / window.innerHeight) * 2 + 1,
+          ),
+          camera,
+        );
+        const intersects = raycaster.intersectObjects(group.children);
+        if (intersects.length > 0) {
+          document.getElementById("popup-img").src =
+            intersects[0].object.userData.id;
+          document.getElementById("popup").style.display = "flex";
+          gsap.fromTo(
+            "#popup",
+            { opacity: 0, scale: 0.8 },
+            { opacity: 1, scale: 1, duration: 0.3 },
+          );
+        }
+      };
+
+      function closePopup() {
+        gsap.to("#popup", {
+          opacity: 0,
+          scale: 0.8,
+          duration: 0.3,
+          onComplete: () => {
+            document.getElementById("popup").style.display = "none";
+          },
+        });
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+  </body>
+</html>

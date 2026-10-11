@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Infinite Photo Stack</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        overflow: hidden;
+
+        background: #000000;
+
+        font-family: Arial, sans-serif;
+
+        cursor: grab;
+      }
+
+      body:active {
+        cursor: grabbing;
+      }
+
+      /* =========================
+
+  메인 씬
+
+========================= */
+
+      .scene {
+        width: 100vw;
+        height: 100vh;
+
+        perspective: 2200px;
+
+        overflow: hidden;
+
+        position: relative;
+      }
+
+      /* =========================
+
+  카드 그룹
+
+========================= */
+
+      .stack {
+        position: absolute;
+
+        left: 50%;
+        top: 50%;
+
+        width: 500px;
+        height: 500px;
+
+        transform-style: preserve-3d;
+
+        transform: translate(-50%, -50%);
+      }
+
+      /* =========================
+
+  카드
+
+========================= */
+
+      .card {
+        position: absolute;
+
+        width: 500px;
+        height: 500px;
+
+        overflow: hidden;
+
+        border-radius: 2px;
+
+        backface-visibility: hidden;
+
+        will-change: transform;
+
+        transform-style: preserve-3d;
+
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        /* =====================================
+
+     카드 그림자 수정하는 곳
+
+  ===================================== */
+
+        box-shadow: 0 30px 60px rgba(255, 255, 255, 0.08);
+
+        transition: filter 0.25s ease;
+      }
+
+      /* =========================
+
+  hover 시 카드 밝아짐
+
+========================= */
+
+      .card:hover {
+        filter: brightness(1.08);
+      }
+
+      /* =========================
+
+  카드 이미지
+
+========================= */
+
+      .card-image {
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+
+        user-select: none;
+        pointer-events: none;
+
+        opacity: 0.95;
+      }
+
+      /* =========================
+
+  카드 텍스트
+
+========================= */
+
+      .card-label {
+        position: absolute;
+
+        left: 24px;
+        bottom: 20px;
+
+        color: white;
+
+        font-size: 28px;
+        font-weight: 700;
+
+        letter-spacing: -0.03em;
+
+        opacity: 0;
+
+        transform: translateY(14px);
+
+        transition:
+          opacity 0.35s ease,
+          transform 0.35s ease;
+
+        pointer-events: none;
+
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      }
+
+      /* =========================
+
+  hover 시 글자 등장
+
+========================= */
+
+      .card:hover .card-label {
+        opacity: 1;
+
+        transform: translateY(0px);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="scene">
+      <div class="stack" id="stack"></div>
+    </div>
+
+    <script>
+      const stack = document.getElementById("stack");
+
+      /* =====================================
+
+  이미지 넣는 곳
+
+  현재 네 파일 구조 기준이라
+  그냥 파일명만 적으면 됨
+
+===================================== */
+
+      const images = [
+        "IMG_7411.png",
+        "IMG_7412.png",
+        "IMG_7413.png",
+        "IMG_7414.png",
+        "IMG_7415.png",
+        "IMG_7416.png",
+        "IMG_7417.png",
+        "IMG_7418.png",
+      ];
+
+      const TOTAL = 18;
+
+      const cards = [];
+
+      /* =====================================
+
+  실제 스크롤 값
+
+===================================== */
+
+      let scroll = 0;
+
+      /* =====================================
+
+  휠 관성
+
+===================================== */
+
+      let wheelVelocity = 0;
+
+      /* =====================================
+
+  drag
+
+===================================== */
+
+      let isDragging = false;
+
+      let lastX = 0;
+      let lastY = 0;
+
+      /* =====================================
+
+  카드 생성
+
+===================================== */
+
+      for (let i = 0; i < TOTAL; i++) {
+        const card = document.createElement("div");
+
+        card.className = "card";
+
+        /* 이미지 */
+
+        const img = document.createElement("img");
+
+        img.className = "card-image";
+
+        img.src = images[i % images.length];
+
+        /* 텍스트 */
+
+        const label = document.createElement("div");
+
+        label.className = "card-label";
+
+        label.textContent = "홍대병";
+
+        /* 카드 추가 */
+
+        card.appendChild(img);
+
+        card.appendChild(label);
+
+        stack.appendChild(card);
+
+        cards.push(card);
+      }
+
+      /* =====================================
+
+  애니메이션
+
+===================================== */
+
+      function animate() {
+        /* =====================================
+
+    wheel만 관성 적용
+
+  ===================================== */
+
+        wheelVelocity *= 0.94;
+
+        scroll += wheelVelocity;
+
+        cards.forEach((card, i) => {
+          let p = (i + scroll) % TOTAL;
+
+          if (p < 0) p += TOTAL;
+
+          const centered = p - TOTAL / 2;
+
+          /* =====================================
+
+      카드 위치
+
+    ===================================== */
+
+          const x = centered * 120;
+
+          const z = Math.abs(centered) * -140;
+
+          const y = centered * -4;
+
+          const rotateY = centered * -7;
+
+          /* =====================================
+
+      기본 scale
+
+    ===================================== */
+
+          let scale = 1 - Math.abs(centered) * 0.015;
+
+          /* =====================================
+
+      hover 시 확대
+
+    ===================================== */
+
+          if (card.matches(":hover")) {
+            scale += 0.08;
+          }
+
+          /* =====================================
+
+      opacity
+
+    ===================================== */
+
+          const opacity = 1 - Math.abs(centered) * 0.08;
+
+          /* =====================================
+
+      z-index
+
+    ===================================== */
+
+          card.style.zIndex = 1000 - Math.abs(Math.round(centered));
+
+          /* =====================================
+
+      transform
+
+    ===================================== */
+
+          card.style.transform = `
+
+      translate3d(
+        ${x}px,
+        ${y}px,
+        ${z}px
+      )
+
+      rotateY(${rotateY}deg)
+
+      scale(${scale})
+
+    `;
+
+          card.style.opacity = opacity;
+        });
+
+        requestAnimationFrame(animate);
+      }
+
+      /* =====================================
+
+  휠
+
+  위:
+  왼쪽
+
+  아래:
+  오른쪽
+
+===================================== */
+
+      window.addEventListener(
+        "wheel",
+
+        (e) => {
+          wheelVelocity -= e.deltaY * 0.0012;
+        },
+
+        { passive: true },
+      );
+
+      /* =====================================
+
+  드래그 시작
+
+===================================== */
+
+      window.addEventListener(
+        "mousedown",
+
+        (e) => {
+          isDragging = true;
+
+          lastX = e.clientX;
+          lastY = e.clientY;
+
+          /*
+      드래그 시작 시
+      관성 제거
+    */
+
+          wheelVelocity = 0;
+        },
+      );
+
+      /* =====================================
+
+  드래그 이동
+
+  드래그 방향으로
+  즉시 이동
+
+===================================== */
+
+      window.addEventListener(
+        "mousemove",
+
+        (e) => {
+          if (!isDragging) return;
+
+          const deltaX = e.clientX - lastX;
+
+          const deltaY = e.clientY - lastY;
+
+          scroll += (deltaX - deltaY) * 0.0035;
+
+          lastX = e.clientX;
+          lastY = e.clientY;
+        },
+      );
+
+      /* =====================================
+
+  드래그 끝
+
+  잔 움직임 없이 정지
+
+===================================== */
+
+      window.addEventListener(
+        "mouseup",
+
+        () => {
+          isDragging = false;
+
+          wheelVelocity = 0;
+        },
+      );
+
+      animate();
+    </script>
+  </body>
+</html>

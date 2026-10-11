@@ -1,0 +1,977 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>나의 병 진단 테스트</title>
+
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      @font-face {
+        font-family: "SEBANG Gothic Bold";
+        src: url("SEBANG Gothic OTF Bold.otf") format("opentype");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      strong,
+      b,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .kicker,
+      .result-kicker,
+      .result-subtitle,
+      .btn-primary,
+      .btn-ghost,
+      .nav-btn {
+        font-family: "SEBANG Gothic Bold", sans-serif !important;
+        font-weight: 700 !important;
+      }
+
+      :root {
+        --ink: #08070a;
+        --pink: #ff008c;
+        --pink-dim: #b5124f;
+        --paper: #f3eef0;
+        --mute: #857e82;
+        --line: rgba(255, 255, 255, 0.1);
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        background: var(--ink);
+        color: var(--paper);
+
+        font-family: "Pretendard Variable", Pretendard, Arial, sans-serif;
+
+        overflow: hidden;
+        background-color: #000000;
+        background-image:
+          linear-gradient(rgba(255, 133, 218, 0.12) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 133, 218, 0.12) 1px, transparent 1px);
+        background-size: 50px 50px;
+      }
+
+      /* =========================================================
+         로고 / 브랜딩
+      ========================================================= */
+
+      #left-branding {
+        position: absolute;
+        top: 30px;
+        left: 90px;
+        width: 650px;
+        z-index: 2000;
+        pointer-events: none;
+      }
+
+      .logo-link {
+        display: inline-block;
+        pointer-events: auto;
+        width: 80px;
+        margin-bottom: 10px;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+      }
+
+      .logo-img {
+        height: auto;
+        width: 100%;
+        display: block;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+      }
+
+      .logo-link:hover .logo-img {
+        opacity: 1;
+      }
+
+      /* =========================================================
+         상단 진행률 바
+      ========================================================= */
+
+      .progress-track {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 3px;
+
+        background: rgba(255, 255, 255, 0.06);
+
+        z-index: 10;
+      }
+
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+
+        background: var(--pink);
+
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* =========================================================
+         공통 레이아웃
+      ========================================================= */
+
+      .app {
+        height: 100vh;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 24px;
+      }
+
+      .panel {
+        width: 100%;
+        max-width: 580px;
+
+        border: 2px solid #000000;
+        background: rgba(0, 0, 0, 0.45);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+
+        padding: 44px 46px;
+        position: relative;
+      }
+
+      .screen {
+        display: none;
+      }
+
+      .screen.is-active {
+        display: block;
+
+        animation: rise 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .screen.is-active {
+          animation: none;
+        }
+      }
+
+      /* =========================================================
+         인트로
+      ========================================================= */
+
+      .kicker {
+        color: var(--pink);
+
+        font-size: 14px;
+        font-weight: 600;
+
+        margin-bottom: 18px;
+      }
+
+      .intro-title {
+        font-size: clamp(34px, 6.6vw, 56px);
+        font-weight: 800;
+
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+
+        margin-bottom: 22px;
+      }
+
+      .intro-desc {
+        max-width: 460px;
+
+        color: var(--mute);
+
+        font-size: 16px;
+        line-height: 1.7;
+
+        margin-bottom: 12px;
+      }
+
+      .intro-meta {
+        color: var(--mute);
+
+        font-size: 14px;
+
+        margin-bottom: 44px;
+      }
+
+      .btn-primary {
+        appearance: none;
+        border: none;
+
+        padding: 16px 40px;
+
+        background: var(--pink);
+        color: #08070a;
+
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 700;
+
+        cursor: pointer;
+
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .btn-primary:hover {
+        box-shadow: 0 16px 36px rgba(255, 46, 122, 0.35);
+        transform: translateY(-2px);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      /* =========================================================
+         질문 화면
+      ========================================================= */
+
+      .q-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        margin-bottom: 18px;
+      }
+
+      .q-count {
+        color: var(--mute);
+
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .q-count b {
+        color: var(--pink);
+        font-weight: 700;
+      }
+
+      .q-toolbar-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .nav-btn {
+        appearance: none;
+
+        padding: 8px 14px;
+
+        background: none;
+        border: 1px solid var(--line);
+        color: var(--mute);
+
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition:
+          border-color 0.2s ease,
+          color 0.2s ease;
+      }
+
+      .nav-btn:hover {
+        border-color: var(--pink);
+        color: var(--pink);
+      }
+
+      .nav-btn[disabled] {
+        visibility: hidden;
+      }
+
+      .q-title {
+        font-size: clamp(23px, 4.2vw, 32px);
+        font-weight: 800;
+
+        line-height: 1.32;
+        letter-spacing: -0.02em;
+
+        margin-bottom: 34px;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+
+        border-top: 1px solid var(--line);
+      }
+
+      .option {
+        position: relative;
+
+        display: flex;
+        align-items: center;
+
+        padding: 18px 4px 18px 20px;
+
+        border-bottom: 1px solid var(--line);
+
+        background: none;
+        border-left: none;
+        border-right: none;
+
+        color: var(--paper);
+
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 500;
+
+        text-align: left;
+
+        cursor: pointer;
+
+        transition:
+          padding-left 0.2s ease,
+          color 0.2s ease;
+      }
+
+      .option::before {
+        content: "";
+
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+
+        width: 3px;
+
+        background: var(--pink);
+
+        transform: scaleY(0);
+        transform-origin: bottom;
+
+        transition: transform 0.25s ease;
+      }
+
+      .option:hover {
+        padding-left: 32px;
+        color: var(--pink);
+      }
+
+      .option:hover::before {
+        transform: scaleY(1);
+      }
+
+      .option.is-picked {
+        color: var(--pink);
+        padding-left: 32px;
+      }
+
+      .option.is-picked::before {
+        transform: scaleY(1);
+      }
+
+      /* =========================================================
+         결과 화면
+      ========================================================= */
+
+      .result-kicker {
+        color: var(--mute);
+
+        font-size: 14px;
+        font-weight: 600;
+
+        margin-bottom: 14px;
+      }
+
+      .result-subtitle {
+        color: var(--pink);
+
+        font-size: 14px;
+        font-weight: 700;
+
+        margin-bottom: 8px;
+      }
+
+      .result-title {
+        font-size: clamp(32px, 6vw, 50px);
+        font-weight: 800;
+
+        line-height: 1.12;
+        letter-spacing: -0.03em;
+
+        margin-bottom: 22px;
+      }
+
+      .result-desc {
+        max-width: 470px;
+
+        color: var(--mute);
+
+        font-size: 16px;
+        line-height: 1.75;
+
+        margin-bottom: 20px;
+      }
+
+      .result-secondary {
+        max-width: 470px;
+
+        padding: 16px 18px;
+
+        border: 1px solid var(--line);
+
+        color: var(--mute);
+
+        font-size: 14px;
+        line-height: 1.65;
+
+        margin-bottom: 40px;
+      }
+
+      .result-secondary b {
+        color: var(--paper);
+        font-weight: 700;
+      }
+
+      .result-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .btn-ghost {
+        appearance: none;
+
+        padding: 15px 30px;
+
+        background: none;
+        border: 1px solid var(--line);
+        color: var(--paper);
+
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition:
+          border-color 0.2s ease,
+          color 0.2s ease;
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--pink);
+        color: var(--pink);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div id="left-branding">
+      <button class="logo-link" onclick="window.location.href = 'index.html'">
+        <img src="로고-04.png" alt="신병 연구소 로고" class="logo-img" />
+      </button>
+    </div>
+
+    <div class="app">
+      <div class="panel">
+        <!-- =========================
+             1. 인트로
+        ========================== -->
+        <section class="screen is-active" id="screen-intro">
+          <p class="kicker">SELF TEST</p>
+
+          <h1 class="intro-title">나는 지금<br />무슨 병에 걸렸을까?</h1>
+
+          <p class="intro-desc">
+            질문 15개에 솔직하게 답하면, 요즘 나에게 가장 가까운 증상을
+            찾아드려요. 정답은 없으니 편하게 골라보세요.
+          </p>
+
+          <p class="intro-meta">문항 15개 · 약 1분 소요</p>
+
+          <button class="btn-primary" id="startBtn" type="button">
+            테스트 시작
+          </button>
+        </section>
+
+        <!-- =========================
+             2. 질문 (JS로 렌더링)
+        ========================== -->
+        <section class="screen" id="screen-question">
+          <div class="q-toolbar">
+            <p class="q-count">
+              <b id="qIndex">1</b> / <span id="qTotal">15</span>
+            </p>
+
+            <div class="q-toolbar-actions">
+              <button class="nav-btn" id="prevBtn" type="button">이전</button>
+              <button class="nav-btn" id="restartBtnTop" type="button">
+                처음부터
+              </button>
+            </div>
+          </div>
+
+          <h2 class="q-title" id="qTitle"></h2>
+
+          <div class="options" id="qOptions"></div>
+        </section>
+
+        <!-- =========================
+             3. 결과
+        ========================== -->
+        <section class="screen" id="screen-result">
+          <p class="result-kicker">결과</p>
+          <p class="result-subtitle" id="resultSubtitle"></p>
+
+          <h2 class="result-title" id="resultTitle"></h2>
+
+          <p class="result-desc" id="resultDesc"></p>
+
+          <div class="result-secondary" id="resultSecondary"></div>
+
+          <div class="result-actions">
+            <button class="btn-primary" id="retryBtn" type="button">
+              다시 하기
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      /* =====================================================
+         증상 데이터
+         (사용자가 제공한 12가지 병을 축약/재구성)
+      ===================================================== */
+
+      const SYNDROMES = {
+        H: {
+          title: "홍대병",
+          subtitle: "비주류 선호성 과잉 증후군",
+          desc: "남들이 아직 모르는 걸 먼저 알아보는 데서 안정감을 느끼는 타입이에요. 좋아하던 게 유명해지는 순간, 이상하게 서운하고 배신당한 기분이 든다면 이미 진행 중일 가능성이 커요.",
+        },
+        G: {
+          title: "칭기즈칸병",
+          subtitle: "자기중심적 가치 동기화 강박",
+          desc: "내가 좋다고 느낀 건 남도 반드시 좋아해야 마음이 놓이는 타입이에요. 권유가 거절당하면 그 사람과는 취향이 안 맞는 게 아니라 '대화가 안 통한다'고 느끼기 쉬워요.",
+        },
+        K: {
+          title: "강남병",
+          subtitle: "상업적 성과 기반 취향 정당화 증후군",
+          desc: "숫자와 순위가 곧 정답이라고 믿는 타입이에요. 검증되지 않은 선택은 실패처럼 느껴져서, 뭘 고르기 전에 후기와 랭킹부터 확인해야 마음이 놓여요.",
+        },
+        J: {
+          title: "중안부정병",
+          subtitle: "안면 중앙부 비율 집착성 신체 변형 장애",
+          desc: "사진 한 장에도 각도와 비율을 먼저 따지는 타입이에요. 무보정 사진 속 내 얼굴을 보면 남들보다 스스로에게 유독 박한 평가를 내리곤 해요.",
+        },
+        P: {
+          title: "뻐큐정병",
+          subtitle: "지절 비율 왜곡 인식 기반 표현 기피 장애",
+          desc: "감정을 표현하는 방식 하나에도 스스로 만족스러운 '각'을 따지는 타입이에요. 정작 중요한 순간엔 스스로를 검열하느라 하고 싶은 말을 다 못 하고 넘어가곤 해요.",
+        },
+        C: {
+          title: "연예인병",
+          subtitle: "자기중심적 인지도 과대평가 및 시선 의식 증후군",
+          desc: "남들의 시선을 유독 의식하는 타입이에요. 아무도 신경 쓰지 않는 상황에서도 괜히 모자와 마스크를 챙기고, 평범한 관심에도 크게 의미를 부여해요.",
+        },
+        D: {
+          title: "GD병",
+          subtitle: "특정 아이콘 기반 정체성 동화 장애",
+          desc: "동경하는 스타일을 자연스럽게 따라가는 타입이에요. 걸음걸이, 옷차림 하나에도 좋아하는 아이콘의 흔적이 은근히 묻어나요.",
+        },
+        N: {
+          title: "일본 하늘 차원달라병",
+          subtitle: "특정 기상 현상 기반 투사적 미화 장애",
+          desc: '여행지의 사소한 것 하나까지 미화하는 타입이에요. 하늘빛 하나에도 "여기랑 차원이 다르다"는 말이 자연스럽게 나와요.',
+        },
+        F: {
+          title: "과일차원달라병",
+          subtitle: "가성비·당도 기반 비교 강박 장애",
+          desc: "맛과 가성비의 기준이 특정 경험에 완전히 고정된 타입이에요. 그 이후로는 뭘 먹어도 그때 그 맛과 가격이 자꾸 비교 대상이 돼요.",
+        },
+        I: {
+          title: "인스타병",
+          subtitle: "전시적 일상 기록 및 디지털 승인 욕구 장애",
+          desc: "경험보다 기록이 먼저인 타입이에요. 게시물 반응이 좋을 때 비로소 그날 하루가 완성된 느낌을 받는다면 이미 진행 중이에요.",
+        },
+        M: {
+          title: "중2병",
+          subtitle: "자아 중심성 과잉 및 환상적 전능감 장애",
+          desc: "나만의 세계와 의미에 몰입하는 타입이에요. 별거 아닌 하루에도 남들은 모르는 나만의 감정선을 은근히 부여하곤 해요.",
+        },
+        X: {
+          title: "비환자",
+          subtitle: "非患者 · 무증상군",
+          desc: "특별한 증상이 없어요. 유행도, 순위도, 남의 시선도 크게 신경 쓰지 않고 그때그때 내키는 대로 반응하는 편이에요. 굳이 진단하자면 '평범함'이 가장 큰 특징이에요.",
+        },
+      };
+
+      /* =====================================================
+         문항 데이터
+         - 각 선택지는 특정 증상과 느슨하게 연결되어 있지만,
+           문항 자체는 결과를 바로 유추할 수 없도록 일상적인
+           상황으로 구성했어요.
+      ===================================================== */
+
+      const QUESTIONS = [
+        {
+          title: "요즘 나만 알고 있던 걸 남들에게 보여줄 때, 나는",
+          options: [
+            { text: "이미 다 알고 있었다는 티를 슬쩍 낸다", tag: "H" },
+            { text: "꼭 한번 경험해보라고 적극적으로 권한다", tag: "G" },
+            { text: "관련 순위나 별점을 같이 보여주며 설득한다", tag: "K" },
+            {
+              text: "그걸 찍은 사진 속 내 얼굴 각도부터 다시 확인한다",
+              tag: "J",
+            },
+            { text: "딱히 대단한 일도 아니라서 그냥 넘어간다", tag: "X" },
+          ],
+        },
+        {
+          title: "여행에서 돌아온 다음 날, 나는",
+          options: [
+            {
+              text: "누가 알아볼까 봐 괜히 마스크를 썼던 게 떠오른다",
+              tag: "C",
+            },
+            { text: "그곳 스타일대로 옷을 다시 맞춰본다", tag: "D" },
+            {
+              text: "거기 하늘 사진을 보며 여기랑 다르다고 생각한다",
+              tag: "N",
+            },
+            { text: "여독 풀고 그냥 평소처럼 지낸다", tag: "X" },
+          ],
+        },
+        {
+          title: "특별한 날, 기록을 남길 때 나는",
+          options: [
+            { text: "반응이 궁금해서 몇 분 간격으로 계속 확인한다", tag: "I" },
+            { text: "설명글에 의미심장한 문장을 하나쯤 넣는다", tag: "M" },
+            {
+              text: "이걸 알아보는 사람이 몇 없을 거라 생각하며 올린다",
+              tag: "H",
+            },
+            { text: "다들 꼭 보라고 주변에 링크를 보낸다", tag: "G" },
+            { text: "따로 기록하지 않고 그 순간만 즐긴다", tag: "X" },
+          ],
+        },
+        {
+          title: "영상통화나 사진 속 내 모습을 볼 때 가장 먼저 보는 건",
+          options: [
+            { text: "얼굴 비율, 특히 눈코입 사이 간격", tag: "J" },
+            { text: "손을 어떻게 두고 있는지", tag: "P" },
+            { text: "내 표정이 남들 눈에 어떻게 보일지", tag: "C" },
+            { text: "옷이나 스타일이 평소 느낌으로 나왔는지", tag: "D" },
+            { text: "딱히 신경 쓰지 않고 그냥 넘어간다", tag: "X" },
+          ],
+        },
+        {
+          title: "여행 다녀와서 사람들에게 제일 하고 싶은 말은",
+          options: [
+            { text: "거기 하늘이랑 풍경이 진짜 다르다는 것", tag: "N" },
+            { text: "거기 음식이 얼마나 저렴하고 맛있었는지", tag: "F" },
+            { text: "사진이 잘 나온 곳이 얼마나 많았는지", tag: "I" },
+            { text: "그때 느낀 감정을 나만 아는 것처럼 얘기한다", tag: "M" },
+            { text: "그냥 잘 다녀왔다고 편하게 말한다", tag: "X" },
+          ],
+        },
+        {
+          title: "누가 나에게 뭔가를 추천하면, 나는",
+          options: [
+            { text: "먼저 순위나 후기 개수를 확인한다", tag: "K" },
+            { text: "괜찮으면 나도 남들에게 적극적으로 다시 권한다", tag: "G" },
+            {
+              text: "관련 사진이 있으면 내가 어떻게 나올지부터 생각한다",
+              tag: "J",
+            },
+            {
+              text: "화가 나는 상황이면 손짓보다 말로 정리하는 편이다",
+              tag: "P",
+            },
+            { text: "관심 없으면 그냥 안 한다고 말한다", tag: "X" },
+          ],
+        },
+        {
+          title: "다음 여행 계획을 세울 때 가장 먼저 찾아보는 건",
+          options: [
+            { text: "그 나라 날씨나 하늘 사진", tag: "N" },
+            { text: "현지 과일이나 음식 가격", tag: "F" },
+            { text: "사진 찍기 좋은 장소 리스트", tag: "I" },
+            { text: "그냥 그때그때 마음 가는 대로 정한다", tag: "X" },
+          ],
+        },
+        {
+          title: "친구들과 취향 얘기를 할 때 나는",
+          options: [
+            { text: "나만의 세계관이 있다고 은근히 티를 낸다", tag: "M" },
+            { text: "남들이 모르는 걸 좋아한다는 게 자랑스럽다", tag: "H" },
+            { text: "내가 좋다고 생각한 건 다들 해봤으면 한다", tag: "G" },
+            { text: "판매량이나 순위로 검증된 것만 믿는다", tag: "K" },
+            { text: "그냥 듣고 넘기는 편이다", tag: "X" },
+          ],
+        },
+        {
+          title: "화가 나거나 감정을 표현해야 하는 순간, 나는",
+          options: [
+            { text: "손짓보다는 표정이나 말로 대신한다", tag: "P" },
+            { text: "누가 보고 있을까 봐 한 번 더 참는다", tag: "C" },
+            { text: "평소 좋아하는 스타일대로 행동하려 한다", tag: "D" },
+            { text: "그때그때 자연스럽게 표현하고 넘어간다", tag: "X" },
+          ],
+        },
+        {
+          title: "맛집을 고를 때 가장 중요한 기준은",
+          options: [
+            { text: "재료나 가격 대비 만족도", tag: "F" },
+            { text: "사진이 예쁘게 나오는지", tag: "I" },
+            { text: "이 자리가 나한테 어떤 의미인지", tag: "M" },
+            { text: "남들이 아직 잘 모르는 곳인지", tag: "H" },
+            { text: "그냥 그날 먹고 싶은 걸 고른다", tag: "X" },
+          ],
+        },
+        {
+          title: "옷이나 아이템을 고를 때 가장 신경 쓰는 건",
+          options: [
+            { text: "얼마나 많이 팔렸고 평가가 좋은지", tag: "K" },
+            { text: "얼굴이나 비율이 좋아 보이는지", tag: "J" },
+            { text: "손이 예뻐 보이는 디자인인지", tag: "P" },
+            { text: "이걸 입으면 사람들이 나를 어떻게 볼지", tag: "C" },
+            { text: "그냥 입기 편한 걸 고른다", tag: "X" },
+          ],
+        },
+        {
+          title: "평범한 일상 중 문득 떠오르는 생각은",
+          options: [
+            { text: "그 나라 하늘이 여기보다 예뻤다는 생각", tag: "N" },
+            { text: "그때 먹었던 과일이 그립다는 생각", tag: "F" },
+            {
+              text: "그때 올린 게시물 반응이 어땠는지 다시 보고 싶다는 생각",
+              tag: "I",
+            },
+            { text: "별생각 없이 그냥 하루를 보낸다", tag: "X" },
+          ],
+        },
+        {
+          title: "온라인 커뮤니티에 내 취향을 공유할 때, 나는",
+          options: [
+            { text: "아무도 모를 것 같은 걸 올리는 게 재밌다", tag: "H" },
+            { text: "댓글로 다들 한 번 해보라고 권한다", tag: "G" },
+            { text: "평점이나 순위 정보를 같이 첨부한다", tag: "K" },
+            { text: "올리기 전 사진 속 내 얼굴부터 확인한다", tag: "J" },
+            { text: "그냥 일상 이야기를 편하게 올린다", tag: "X" },
+          ],
+        },
+        {
+          title: "많은 사람 앞에 설 일이 생기면, 나는",
+          options: [
+            { text: "혹시 누가 알아볼까 신경이 쓰인다", tag: "C" },
+            { text: "평소 좋아하는 스타일을 더 신경 써서 챙긴다", tag: "D" },
+            { text: "그날따라 하늘이나 날씨까지 유난히 신경 쓰인다", tag: "N" },
+            { text: "평소랑 다름없이 행동한다", tag: "X" },
+          ],
+        },
+        {
+          title: "하루를 마무리하며 가장 많이 하는 생각은",
+          options: [
+            { text: "오늘 올린 게시물 반응이 어땠을지", tag: "I" },
+            {
+              text: "오늘 하루가 나한테 어떤 의미였는지 혼자 곱씹는다",
+              tag: "M",
+            },
+            {
+              text: "오늘 발견한 것 중 아무도 모를 만한 게 있었는지",
+              tag: "H",
+            },
+            { text: "오늘 알게 된 걸 내일 누구한테 알려줄지", tag: "G" },
+            { text: "특별한 생각 없이 그냥 잠든다", tag: "X" },
+          ],
+        },
+      ];
+
+      /* =====================================================
+         상태
+
+         answers[i] = 선택한 옵션의 index (아직 안 골랐으면 null)
+         뒤로가기를 눌러도 이전 선택은 유지됨
+      ===================================================== */
+
+      let current = 0;
+      let answers = new Array(QUESTIONS.length).fill(null);
+
+      const screens = {
+        intro: document.getElementById("screen-intro"),
+        question: document.getElementById("screen-question"),
+        result: document.getElementById("screen-result"),
+      };
+
+      const progressFill = document.getElementById("progressFill");
+      const prevBtn = document.getElementById("prevBtn");
+
+      function showScreen(name) {
+        Object.values(screens).forEach((s) => s.classList.remove("is-active"));
+        screens[name].classList.add("is-active");
+      }
+
+      function renderQuestion() {
+        const q = QUESTIONS[current];
+
+        document.getElementById("qIndex").textContent = current + 1;
+        document.getElementById("qTotal").textContent = QUESTIONS.length;
+        document.getElementById("qTitle").textContent = q.title;
+
+        progressFill.style.width = `${(current / QUESTIONS.length) * 100}%`;
+
+        prevBtn.disabled = current === 0;
+
+        const optionsEl = document.getElementById("qOptions");
+        optionsEl.innerHTML = "";
+
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "option";
+          btn.type = "button";
+          btn.textContent = opt.text;
+
+          if (answers[current] === i) {
+            btn.classList.add("is-picked");
+          }
+
+          btn.addEventListener("click", () => {
+            answers[current] = i;
+
+            optionsEl
+              .querySelectorAll(".option")
+              .forEach((el) => el.classList.remove("is-picked"));
+            btn.classList.add("is-picked");
+
+            setTimeout(() => {
+              if (current < QUESTIONS.length - 1) {
+                current += 1;
+                renderQuestion();
+              } else {
+                showResult();
+              }
+            }, 200);
+          });
+
+          optionsEl.appendChild(btn);
+        });
+      }
+
+      function computeScores() {
+        const scores = {};
+
+        Object.keys(SYNDROMES).forEach((key) => {
+          scores[key] = 0;
+        });
+
+        answers.forEach((optIndex, qIndex) => {
+          if (optIndex === null) return;
+
+          const tag = QUESTIONS[qIndex].options[optIndex].tag;
+          scores[tag] += 1;
+        });
+
+        return scores;
+      }
+
+      function showResult() {
+        progressFill.style.width = "100%";
+
+        const scores = computeScores();
+
+        const ranked = Object.entries(scores)
+          .filter(([, v]) => v > 0)
+          .sort((a, b) => b[1] - a[1]);
+
+        const topKey = ranked.length ? ranked[0][0] : "M";
+        const secondEntry = ranked.find(([key]) => key !== topKey);
+
+        const top = SYNDROMES[topKey];
+
+        document.getElementById("resultSubtitle").textContent = top.subtitle;
+        document.getElementById("resultTitle").textContent = top.title;
+        document.getElementById("resultDesc").textContent = top.desc;
+
+        const secondaryEl = document.getElementById("resultSecondary");
+
+        if (secondEntry) {
+          const second = SYNDROMES[secondEntry[0]];
+
+          if (topKey === "X") {
+            secondaryEl.innerHTML = `다만 <b>${second.title}</b> 성향도 살짝 섞여 있어요.`;
+          } else if (secondEntry[0] === "X") {
+            secondaryEl.innerHTML = `그 와중에 비교적 <b>평범한(비환자) 모습</b>도 함께 보여요.`;
+          } else {
+            secondaryEl.innerHTML = `동반 증상으로 <b>${second.title}</b> 성향도 함께 보여요.`;
+          }
+
+          secondaryEl.style.display = "block";
+        } else {
+          secondaryEl.style.display = "none";
+        }
+
+        showScreen("result");
+      }
+
+      function restart() {
+        current = 0;
+        answers = new Array(QUESTIONS.length).fill(null);
+        progressFill.style.width = "0%";
+        showScreen("intro");
+      }
+
+      document.getElementById("startBtn").addEventListener("click", () => {
+        current = 0;
+        answers = new Array(QUESTIONS.length).fill(null);
+
+        showScreen("question");
+        renderQuestion();
+      });
+
+      prevBtn.addEventListener("click", () => {
+        if (current === 0) return;
+        current -= 1;
+        renderQuestion();
+      });
+
+      document
+        .getElementById("restartBtnTop")
+        .addEventListener("click", restart);
+      document.getElementById("retryBtn").addEventListener("click", restart);
+    </script>
+  </body>
+</html>

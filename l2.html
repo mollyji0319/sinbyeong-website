@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patho Lab - Diagnosing The Next Big Trend</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap");
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background-color: #12000c;
+        color: #ffffff;
+        font-family: "Noto Sans KR", sans-serif;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      ::selection {
+        background: #ff008c;
+        color: #ffffff;
+      }
+
+      /* 움직이는 배경 그라데이션 */
+      .animated-gradient-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          120deg,
+          #12000c,
+          #3d0024,
+          #12000c,
+          #ff007f33
+        );
+        background-size: 300% 300%;
+        animation: gradientAnimation 12s ease infinite;
+        z-index: -2;
+      }
+
+      @keyframes gradientAnimation {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      /* 그리드 배경 패턴 */
+      .grid-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+          linear-gradient(
+            to right,
+            rgba(230, 0, 115, 0.15) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(230, 0, 115, 0.15) 1px,
+            transparent 1px
+          );
+        background-size: 80px 80px;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      /* 미세한 그레인 텍스처 - 인쇄물 같은 질감 */
+      .grain-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 50;
+        opacity: 0.05;
+        pointer-events: none;
+        mix-blend-mode: overlay;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+
+      /* =========================================================
+         샤라락 리빌(Reveal) 인터랙션 시스템
+         - 텍스트/이미지 블록: 핑크 패널이 오른쪽으로 걷히며 콘텐츠 등장
+         - 진단 랩 컨셉에 맞춰 "스캔이 지나가며 결과가 드러난다"는
+           하나의 일관된 모션 언어로 사용
+      ========================================================= */
+
+      .reveal {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .reveal::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-color: #ff008c;
+        transform: scaleX(1);
+        transform-origin: right;
+        z-index: 6;
+        pointer-events: none;
+      }
+
+      .reveal > * {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      .reveal.is-revealed::after {
+        animation: maskSweep 0.9s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+        animation-delay: var(--d, 0s);
+      }
+
+      .reveal.is-revealed > * {
+        animation: contentRise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        animation-delay: calc(var(--d, 0s) + 0.32s);
+      }
+
+      @keyframes maskSweep {
+        to {
+          transform: scaleX(0);
+        }
+      }
+
+      @keyframes contentRise {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal::after {
+          display: none;
+        }
+        .reveal > * {
+          opacity: 1;
+          transform: none;
+          animation: none !important;
+        }
+        .scope-box.scan-reveal::before {
+          display: none;
+        }
+        .scope-box.scan-reveal img {
+          opacity: 1 !important;
+        }
+      }
+
+      /* 전체 페이지 컨테이너 */
+      .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 280px;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* 1. INTRO 섹션 */
+      .intro-section-wrapper {
+        position: relative;
+        width: 100%;
+        min-height: 600px;
+        padding-top: 20px;
+      }
+
+      /* 윗변이 긴 사다리꼴 배경 (좌측 밀착) */
+      .hero-diagonal-bg {
+        position: absolute;
+        top: -40px;
+        left: calc(-50vw + 50%);
+        width: 80vw;
+        height: 135%;
+        background-color: #ff008c;
+        clip-path: polygon(0 0, 100% 0, 75% 100%, 0% 100%);
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      /* 좌측 콘텐츠 영역 */
+      .intro-content {
+        position: relative;
+        z-index: 5;
+        max-width: 620px;
+      }
+
+      .logo-img {
+        width: 150px;
+        margin-bottom: 40px;
+        display: inline-block;
+      }
+
+      /* 로고 링크 스타일 초기화 */
+      .logo-img a,
+      .footer-logo a {
+        display: block;
+        width: 100%;
+      }
+
+      /* 로고 화이트 컬러로 변환 */
+      .logo-img img,
+      .footer-logo img {
+        width: 100%;
+        height: auto;
+        display: block;
+        filter: brightness(0) invert(1);
+      }
+
+      /* 메인 글자 영역 */
+      .hero-title-img {
+        width: 100%;
+        max-width: 640px;
+        margin-bottom: 35px;
+      }
+
+      .hero-title-img img {
+        width: 100%;
+        height: auto;
+        display: block;
+        filter: brightness(0) invert(1);
+      }
+
+      .section-badge {
+        display: inline-block;
+        background-color: #ff008c;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 25px;
+        padding: 6px 20px;
+        margin-bottom: 20px;
+        letter-spacing: -0.5px;
+      }
+
+      .description {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.9);
+        opacity: 0;
+        animation: descFadeIn 0.9s ease forwards;
+        animation-delay: 0.95s;
+      }
+
+      @keyframes descFadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .description {
+          opacity: 1;
+          animation: none;
+        }
+      }
+
+      .description p + p {
+        margin-top: 15px;
+      }
+
+      /* 공통 타이틀 배지 (가운데 정렬형) */
+      .center-badge-wrapper {
+        text-align: center;
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .center-badge {
+        display: inline-block;
+        background-color: #ff008c;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.05rem;
+        padding: 8px 30px;
+        letter-spacing: 0.5px;
+      }
+
+      /* 2. RESEARCH SCOPE 섹션 */
+      .scope-section {
+        width: 100%;
+      }
+
+      .scope-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+      }
+
+      .scope-box {
+        position: relative;
+        background-color: #d9d9d9;
+        height: 400px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      /* 리빌용 스캔 마스크 (핑크 패널이 우측으로 걷히며 사진 노출) */
+      .scope-box.scan-reveal::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-color: #ff008c;
+        transform: scaleX(1);
+        transform-origin: right;
+        z-index: 4;
+        pointer-events: none;
+      }
+
+      .scope-box.scan-reveal.is-revealed::before {
+        animation: maskSweep 0.9s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+        animation-delay: var(--d, 0s);
+      }
+
+      .scope-box.scan-reveal img {
+        opacity: 0;
+        transition: opacity 0.5s ease var(--d, 0s);
+      }
+
+      .scope-box.scan-reveal.is-revealed img {
+        opacity: 1;
+      }
+
+      /* 이미지 밝기(노출값) 10% 상향 조정 (brightness(1.1)) */
+      .scope-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        filter: brightness(1.1);
+        transition:
+          transform 0.5s ease,
+          opacity 0.5s ease var(--d, 0s);
+      }
+
+      /* 호버 시 이미지가 살짝 확대되는 효과 */
+      .scope-box:hover img {
+        transform: scale(1.03);
+      }
+
+      /* 진단 스캐너처럼 원형으로 열리며 나타나는 오버레이 */
+      .scope-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #ff008c; /* 핑크빛 오버레이 배경 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        text-align: center;
+        clip-path: circle(0% at 50% 50%);
+        transition: clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        pointer-events: none; /* 오버레이가 마우스 이벤트를 방해하지 않도록 처리 */
+      }
+
+      /* 마우스 오버 시 오버레이가 원형으로 확장되며 등장 */
+      .scope-box:hover .scope-overlay {
+        clip-path: circle(75% at 50% 50%);
+      }
+
+      .scope-overlay p {
+        color: #ffffff;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        font-weight: 400;
+        word-break: keep-all;
+      }
+
+      /* 3. CORE PHILOSOPHY 섹션 */
+      .philosophy-section {
+        width: 100%;
+      }
+
+      .philosophy-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 1050px;
+        margin: 0 auto;
+      }
+
+      .phil-item {
+        position: relative;
+        background: #ff008c;
+        padding: 3px;
+        clip-path: polygon(0 0, 96% 0, 100% 50%, 96% 100%, 0 100%);
+      }
+
+      .phil-item-inner {
+        background-color: #1a0011;
+        padding: 24px 40px;
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        clip-path: polygon(0 0, 96% 0, 100% 50%, 96% 100%, 0 100%);
+      }
+
+      .phil-item-inner.reveal::after {
+        background-color: #ff008c;
+      }
+
+      .phil-number {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #ff008c;
+        font-style: italic;
+        min-width: 50px;
+      }
+
+      .phil-text h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #ffffff;
+      }
+
+      .phil-text p {
+        font-size: 0.88rem;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.5;
+      }
+
+      /* 4. NOTICE 섹션 */
+      .notice-section-wrapper {
+        position: relative;
+        margin-top: 170px;
+      }
+
+      .zigzag-divider {
+        width: 100%;
+        height: 45px;
+        background: #ff008c;
+        clip-path: polygon(
+          0 100%,
+          5% 0,
+          10% 100%,
+          15% 0,
+          20% 100%,
+          25% 0,
+          30% 100%,
+          35% 0,
+          40% 100%,
+          45% 0,
+          50% 100%,
+          55% 0,
+          60% 100%,
+          65% 0,
+          70% 100%,
+          75% 0,
+          80% 100%,
+          85% 0,
+          90% 100%,
+          95% 0,
+          100% 100%
+        );
+        margin-bottom: -2px;
+      }
+
+      .notice-box {
+        background-color: #ff008c;
+        padding: 50px 40px 130px 40px;
+        text-align: center;
+        color: #12000c;
+      }
+
+      .warning-icon {
+        font-size: 2.8rem;
+        margin-bottom: 15px;
+        color: #12000c;
+      }
+
+      .notice-title {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: #ffffff;
+        margin-bottom: 30px;
+        letter-spacing: 0.5px;
+        text-align: center;
+      }
+
+      .notice-title.reveal::after,
+      .notice-rules.reveal::after,
+      .footer-logo.reveal::after {
+        background-color: #ff008c;
+      }
+
+      .notice-rules {
+        list-style: none;
+        max-width: 800px;
+        margin: 0 auto 60px auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        padding-left: 0;
+      }
+
+      .notice-rules li {
+        font-size: 0.9rem;
+        color: #ffffff;
+        line-height: 1.5;
+        font-weight: 400;
+      }
+
+      .footer-logo {
+        width: 140px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="animated-gradient-bg"></div>
+    <div class="grid-background"></div>
+    <div class="grain-overlay"></div>
+
+    <div class="page-container">
+      <!-- 1. INTRO 섹션 -->
+      <div class="intro-section-wrapper">
+        <div class="hero-diagonal-bg"></div>
+
+        <div class="intro-content">
+          <div class="logo-img reveal" data-reveal style="--d: 0s">
+            <a href="index.html">
+              <img src="./로고-04.png" alt="Patho Lab Logo" />
+            </a>
+          </div>
+          <div class="hero-title-img reveal" data-reveal style="--d: 0.18s">
+            <img
+              src="./메인글자-022.png"
+              alt="DIAGNOSING, THE NEXT BIG TREND"
+            />
+          </div>
+          <div class="section-badge reveal" data-reveal style="--d: 0.58s">
+            INTRO : 우리는 왜 이토록 이상한가
+          </div>
+          <div class="description">
+            <p>
+              디지털 대전환의 시대를 지나, 우리는 매일 아침 눈을 뜨자마자
+              알고리즘의 바다로 다이브합니다. 타임라인은 끊임없이 새로운 자극을
+              주입하고, 우리의 뇌는 웃음의 호흡에 맞춰 재조립되었습니다.
+            </p>
+            <p>
+              과거의 의학은 신체의 결손을 치료했으나, 신병연구소(新病研究所)는
+              현대인이 미디어 환경 속에서 자발적으로 감염되는 '정신적·문화적
+              변이 현상'을 주목합니다. 명확한 병명은 없으나 모두가 알고 있는
+              모순적인 행동 양식, 예를 들면 타인의 시선을 극도로 의식하면서도
+              무심한 척 코스프레를 하거나, 인터넷 온라인으로 소통이 가능한
+              기묘한 상태를 우리는 '신병(新病)'이라 명명합니다. 본 연구소는 이
+              가상의 바이러스들이 어떻게 대중의 뇌를 잠식하고 있는지 추적합니다.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. RESEARCH SCOPE 섹션 -->
+      <section class="scope-section">
+        <div class="center-badge-wrapper">
+          <div class="center-badge reveal" data-reveal>
+            RESEARCH SCOPE : 연구 분야 및 대상
+          </div>
+        </div>
+        <div class="scope-grid">
+          <!-- 첫 번째 박스 -->
+          <div class="scope-box scan-reveal" data-reveal style="--d: 0s">
+            <img src="./임시1.png" alt="Research Scope 1" />
+            <div class="scope-overlay">
+              <p>
+                <strong>특이증상 아카이빙:</strong> 인터넷 커뮤니티, SNS 피드,
+                숏폼 알고리즘 속에서 포착되는 현대인 특유의 화행(話行)과 생활
+                습관 연구
+              </p>
+            </div>
+          </div>
+          <!-- 두 번째 박스 -->
+          <div class="scope-box scan-reveal" data-reveal style="--d: 0.15s">
+            <img src="./임시2.png" alt="Research Scope 2" />
+            <div class="scope-overlay">
+              <p>
+                <strong>증후군 분류학:</strong> '홍대병'을 비롯해 타인의 시선과
+                자기 검열, 알고리즘 피로도가 만들어낸 다채로운 현대적 결핍 진단
+              </p>
+            </div>
+          </div>
+          <!-- 세 번째 박스 -->
+          <div class="scope-box scan-reveal" data-reveal style="--d: 0.3s">
+            <img src="./임시3.png" alt="Research Scope 3" />
+            <div class="scope-overlay">
+              <p>
+                <strong>인터랙티브 진단:</strong> 웹사이트를 방문한 사용자의
+                행동 패턴과 성향을 실시간으로 분석하여, 맞춤형 신종 질병 처방전
+                발행
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. CORE PHILOSOPHY 섹션 -->
+      <section class="philosophy-section">
+        <div class="center-badge-wrapper">
+          <div class="center-badge reveal" data-reveal>
+            CORE PHILOSOPHY : 연구소 3대 강령
+          </div>
+        </div>
+        <div class="philosophy-list">
+          <div class="phil-item">
+            <div class="phil-item-inner reveal" data-reveal style="--d: 0s">
+              <div class="phil-number">01</div>
+              <div class="phil-text">
+                <h3>과잉 각성 상태의 방치</h3>
+                <p>
+                  현대인은 너무 많은 정보를 실시간으로 처리하다가 뇌가 과열되어
+                  멈추는 '디지털 방열 상태'에 빠져 있습니다. 우리는 이를
+                  방치하지 않고 예술적·시각적 데이터로 박제합니다.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="phil-item">
+            <div class="phil-item-inner reveal" data-reveal style="--d: 0.12s">
+              <div class="phil-number">02</div>
+              <div class="phil-text">
+                <h3>비생산적 가십의 학술화</h3>
+                <p>
+                  쓸데없어 보이는 인터넷 밈과 트렌드를 고도의 학술적 연구
+                  대상처럼 진지하게 다룸으로써, 무의미 속에 숨겨진 시대의 진짜
+                  욕망을 해부합니다.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="phil-item">
+            <div class="phil-item-inner reveal" data-reveal style="--d: 0.24s">
+              <div class="phil-number">03</div>
+              <div class="phil-text">
+                <h3>증상의 상호 공유와 연대</h3>
+                <p>
+                  나만 이상한 게 아니라는 안도감을 제공하고, 각자의 소소한
+                  정신적 변이 증상을 투명하게 고백할 수 있는 안전한 연구 공간을
+                  지향합니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 4. NOTICE FOR VISITORS 섹션 -->
+    <div class="notice-section-wrapper">
+      <div class="zigzag-divider"></div>
+      <div class="notice-box">
+        <div class="warning-icon">⚠️</div>
+        <h2 class="notice-title reveal" data-reveal>
+          05. NOTICE FOR VISITORS : 방문자 필독 수칙
+        </h2>
+        <ul class="notice-rules reveal" data-reveal style="--d: 0.1s">
+          <li>
+            1. 본 웹사이트는 가상의 질병을 다루고 있으나, 모든 증상은 당신의
+            일상과 놀라울 정도로 일치할 수 있습니다.
+          </li>
+          <li>
+            2. 웹사이트 구경이 끝나고 나면 반드시 좌측 상단 로고를 눌러
+            메인화면으로 이동해 주십시오.
+          </li>
+          <li>
+            3. 스크롤을 내리는 동안 발생하는 심리적 동요나 가벼운 자조(自嘲)는
+            연구소가 책임지지 않습니다.
+          </li>
+        </ul>
+        <div class="footer-logo reveal" data-reveal style="--d: 0.2s">
+          <a href="index.html">
+            <img src="./로고-04.png" alt="Patho Lab Logo" />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 뷰포트에 들어오는 순간 리빌 애니메이션을 트리거.
+      // 히어로 영역은 페이지 로드 시 이미 화면 안에 있으므로
+      // 각 요소에 지정된 --d(지연 시간) 값에 따라 순차적으로 등장한다.
+      const revealTargets = document.querySelectorAll("[data-reveal]");
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-revealed");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.2, rootMargin: "0px 0px -40px 0px" },
+        );
+
+        revealTargets.forEach((el) => observer.observe(el));
+      } else {
+        // IntersectionObserver 미지원 환경 폴백
+        revealTargets.forEach((el) => el.classList.add("is-revealed"));
+      }
+    </script>
+  </body>
+</html>

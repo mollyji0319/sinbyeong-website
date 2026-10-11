@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>정사각형 사이버 랩</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      @font-face {
+        font-family: "SEBANG Gothic Bold";
+        src: url("SEBANG Gothic OTF Bold.otf") format("opentype");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      /* 유휴 상태 안내 팝업 스타일 */
+      #idle-guide-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        background: rgba(10, 10, 15, 0.85);
+        border: 1px solid rgba(255, 46, 122, 0.4);
+        box-shadow: 0 0 30px rgba(255, 46, 122, 0.2);
+        padding: 24px 36px;
+        z-index: 9999;
+        text-align: center;
+        color: #ff008c;
+        font-family: "SEBANG Gothic Bold", "Chakra Petch", sans-serif;
+        letter-spacing: 0.5px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+          opacity 0.4s ease,
+          transform 0.4s ease,
+          visibility 0.4s ease;
+        backdrop-filter: blur(8px);
+      }
+
+      #idle-guide-popup.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      #idle-guide-popup .guide-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ff008c;
+        margin-bottom: 8px;
+      }
+
+      #idle-guide-popup .guide-desc {
+        font-size: 14px;
+        color: #ff008c;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 유휴 상태 안내 팝업 -->
+    <div id="idle-guide-popup">
+      <div class="guide-title">SYSTEM NOTICE</div>
+      <div class="guide-desc">
+        커서를 움직여 각 방을 누르며 연구소를 알아보세요
+      </div>
+    </div>
+
+    <!-- 인트로 로딩 화면 -->
+    <div id="intro-loader">
+      <div class="loader-content">
+        <div class="loader-logo">PATHOGEN RESEARCH LAB</div>
+        <div class="loader-bar-container">
+          <div id="loader-bar"></div>
+        </div>
+        <div class="loader-status">
+          INITIALIZING SYSTEM... <span id="loader-percent">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-container">
+      <canvas id="stars"></canvas>
+      <video id="bg-video" autoplay loop muted playsinline>
+        <source src="Comp 1_2.webm" type="video/webm" />
+      </video>
+
+      <!-- SVG 오버레이 영역 -->
+      <svg
+        class="overlay-svg"
+        viewBox="0 0 3000 3000"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <!-- 1. 왼쪽 방 (대기실 로비) -> NO.1 -->
+        <a href="l2.html">
+          <path
+            class="room-path"
+            id="room-left"
+            data-no="NO.1"
+            data-title="대기실 로비"
+            data-desc="본 페이지는 본격적인 관측 프로그램에 진입하기 전, 방문자가 신병 연구소의 세계관과 체계를 직관적으로 파악할 수 있도록 설계된 공식 대기 공간이다."
+            data-items='["- 연구실의 개요", "- 연구 분야 및 대상", "- 연구소 3대 강령", "- 방문자 필독 수칙"]'
+            data-d="M 773 1197 L 902 1269 L 897 1661 L 1072 1759 L 714 1976 L 404 1791 L 402 1399 Z"
+            d="M 773 1197 L 902 1269 L 897 1661 L 1072 1759 L 714 1976 L 404 1791 L 402 1399 Z"
+          />
+        </a>
+
+        <!-- 2. 중앙 상단 방 (실험실) -> NO.2 -->
+        <a href="lab.html">
+          <path
+            class="room-path"
+            id="room-top"
+            data-no="NO.2"
+            data-title="실험실"
+            data-desc="실험실: 신(新)병의 핵심 데이터 분석 및 종합 연구가 진행되는 메인 연구소 공간입니다."
+            data-items='["- 신병 데이터 분석", "- 코어 시퀀스 연구", "- 종합 실험 로그", "- 보안 구역 프로토콜"]'
+            data-d="M 1621 227 L 1120 529 L 1117 985 L 1578 1248 L 2031 975 L 2034 466 Z"
+            d="M 1621 227 L 1120 529 L 1117 985 L 1578 1248 L 2031 975 L 2034 466 Z"
+          />
+        </a>
+
+        <!-- 3. 오른쪽 방 (진단실) -> NO.3 -->
+        <a href="jindan.html">
+          <path
+            class="room-path"
+            id="room-right"
+            data-no="NO.3"
+            data-title="진단실"
+            data-desc="진단실: 개별 상태 체크 및 정밀 진단 프로토콜이 실행되는 구역입니다."
+            data-items='["- 개별 상태 체크", "- 정밀 진단 프로토콜", "- 환자 이력 카드", "- 진단 키트 현황"]'
+            data-d="M 2220 956 L 2071 1051 L 2068 1468 L 1848 1619 L 2251 1849 L 2630 1629 L 2628 1203 Z"
+            d="M 2220 956 L 2071 1051 L 2068 1468 L 1848 1619 L 2251 1849 L 2630 1629 L 2628 1203 Z"
+          />
+        </a>
+
+        <!-- 4. 하단 방 (카페테리아) -> NO.4 -->
+        <a href="cafe.html">
+          <path
+            class="room-path"
+            id="room-bottom"
+            data-no="NO.4"
+            data-title="카페테리아"
+            data-desc="카페테리아: 새로 발견된 신병에 대해 자유롭게 이야기하고 이를 연구소에 보고하는 장소 입니다."
+            data-items='["- 자유 토론 구역", "- 신병 제보 접수", "- 비공식 가십 수집", "- 연구원 휴게실"]'
+            data-d="M 1560 1868 L 1708 1960 L 1711 2353 L 1867 2464 L 1485 2673 L 1173 2488 L 1173 2098 Z"
+            d="M 1560 1868 L 1708 1960 L 1711 2353 L 1867 2464 L 1485 2673 L 1173 2488 L 1173 2098 Z"
+          />
+        </a>
+      </svg>
+
+      <!-- UI 오버레이 레이어 -->
+      <div class="ui-overlay">
+        <!-- 왼쪽 하단 추가 문구 영역 -->
+        <div class="bottom-left-text-box">
+          <div class="bottom-left-main-title">WE ARE DIGITAL PATHOLOGIST</div>
+          <div class="bottom-left-desc-list">
+            <p>
+              우리는 세상의 유행을 살짝 비켜나간 남다른 취향과 은근한 강박을
+              픽셀과 데이터로 흥미롭게 파헤치는 디지털 병리학자들입니다.
+            </p>
+            <p>
+              평범한 진단서에는 절대 담기지 않는 우리들만의 독특한 일상 속 이상
+              신호를 유쾌하고 가볍게 관측하고 기록합니다.
+            </p>
+            <p>
+              가벼운 마음으로 들어와 남들과 다른 기묘한 데이터들을 구경해
+              보세요.
+            </p>
+          </div>
+        </div>
+        <!-- 좌측 상단 배지 -->
+        <div class="top-left-branding">
+          <img src="로고-04.png" alt="Patho Lab Logo" class="site-logo" />
+          <div class="recruit-badge">
+            <div class="recruit-badge-left">
+              <span class="recruit-title">Confirmed new recruit</span>
+            </div>
+            <div class="recruit-badge-right">
+              <span class="recruit-count">21</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우측 하단 패널 -->
+        <div class="bottom-right-panel">
+          <div class="custom-panel-frame">
+            <!-- 상단 헤더 -->
+            <div class="panel-header-row">
+              <div id="info-box-no" class="panel-no">NO.1</div>
+              <div id="info-box-title" class="panel-title">대기실 로비</div>
+            </div>
+
+            <!-- 중단 컨텐츠 (미니맵 칼럼 + 메뉴 리스트) -->
+            <div class="panel-body-row">
+              <div class="panel-svg-container">
+                <svg
+                  id="panel-mini-svg"
+                  viewBox="0 0 1000 1000"
+                  preserveAspectRatio="xMidYMid meet"
+                >
+                  <path id="panel-mini-path" d="" />
+                </svg>
+              </div>
+              <div id="info-box-items" class="panel-items-list">
+                <!-- 자바스크립트로 동적 생성됨 -->
+              </div>
+            </div>
+
+            <!-- 하단 설명 텍스트 박스 -->
+            <div class="panel-footer-row">
+              <div id="info-box-desc" class="panel-desc">
+                <!-- 설명 텍스트 동적 입력 -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+      // 5초 동안 마우스 움직임이 없을 때 안내 팝업을 띄우는 스크립트
+      const idlePopup = document.getElementById("idle-guide-popup");
+      let idleTimer = null;
+      const IDLE_TIME = 5000; // 5초 (밀리초 단위)
+
+      function showIdlePopup() {
+        idlePopup.classList.add("active");
+      }
+
+      function hideIdlePopup() {
+        idlePopup.classList.remove("active");
+      }
+
+      function resetIdleTimer() {
+        hideIdlePopup();
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(showIdlePopup, IDLE_TIME);
+      }
+
+      // 마우스 움직임 감지
+      window.addEventListener("mousemove", resetIdleTimer);
+      window.addEventListener("mousedown", resetIdleTimer);
+      window.addEventListener("keydown", resetIdleTimer);
+
+      // 페이지 로드 시 타이머 초기 가동
+      resetIdleTimer();
+    </script>
+  </body>
+</html>

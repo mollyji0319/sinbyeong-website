@@ -1,0 +1,400 @@
+/* 1. 기본 배경 및 레이아웃 */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #000000;
+  background-image:
+    linear-gradient(rgba(255, 133, 218, 0.188) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 133, 218, 0.188) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.main-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 2. 영상과 빛(SVG)의 배치 및 층(Layer) 설정 */
+#bg-video,
+.overlay-svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  max-width: 100vh;
+  max-height: 100vh;
+  object-fit: contain;
+  transform-origin: center;
+  transition: transform 0.1s ease-out;
+  transform: scale(1.15);
+}
+
+#bg-video {
+  z-index: 2;
+  pointer-events: none;
+}
+
+.overlay-svg {
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 3. 방 영역(Path) 설정 */
+.room-path {
+  pointer-events: auto;
+  fill: rgba(0, 0, 0, 0);
+  stroke: rgba(0, 0, 0, 0);
+  stroke-width: 0;
+  cursor: pointer;
+  transition: all 0.5s ease-out;
+}
+
+.room-path:hover {
+  filter: blur(90px) brightness(2);
+}
+
+#room-top:hover {
+  fill: #ff008c;
+}
+
+#room-left:hover {
+  fill: #ff008c;
+}
+
+#room-right:hover {
+  fill: #ff008c;
+}
+
+#room-bottom:hover {
+  fill: #ff008c;
+}
+
+#stars {
+  display: none;
+}
+
+/* ==========================================
+   6. UI 오버레이 및 브랜딩 스타일
+   ========================================== */
+
+.ui-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+/* 좌측 상단 배지 (사이즈 축소) */
+.top-left-branding {
+  position: absolute;
+  top: 50px;
+  left: 60px;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.site-logo {
+  height: 40px; /* 로고 높이를 기존보다 확 줄임 */
+  object-fit: contain;
+  display: block;
+}
+
+.recruit-badge {
+  display: flex;
+  align-items: stretch;
+  width: fit-content;
+  border: 1.5px solid #ff008c; /* 테두리 두께도 살짝 슬림하게 */
+  transform: skewX(-25deg);
+  margin-left: 0px;
+}
+
+.recruit-badge-left {
+  background-color: #ff008c;
+  padding: 2px 7px 5px 8px; /* 내부 여백 축소 */
+  display: flex;
+  align-items: center;
+}
+
+.recruit-title {
+  font-family: "Chakra Petch", sans-serif;
+  color: #ffffff;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 9px; /* 폰트 크기 축소 */
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transform: skewX(5deg);
+  display: inline-block;
+  line-height: 1;
+}
+
+.recruit-badge-right {
+  background-color: #000000;
+  border-left: 1px solid #ff008c;
+  padding: 5px 16px 7px 16px; /* 내부 여백 축소 */
+  display: flex;
+  align-items: center;
+}
+
+.recruit-count {
+  font-family: "Chakra Petch", sans-serif;
+  color: #ffffff;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 9px; /* 폰트 크기 축소 */
+  transform: skewX(15deg);
+  display: inline-block;
+  line-height: 1;
+}
+
+/* ==========================================
+   우측 하단 커스텀 패널 (5초 딜레이 페이드아웃 적용)
+   ========================================== */
+
+.bottom-right-panel {
+  position: absolute;
+  bottom: 60px;
+  right: 50px;
+  width: 300px;
+  pointer-events: auto;
+
+  opacity: 0;
+  visibility: hidden;
+  /* 커서를 뗄 때 5초 동안 서서히 사라지도록 설정 */
+  transition:
+    opacity 5s ease,
+    visibility 5s ease;
+}
+
+body.is-hovered .bottom-right-panel {
+  opacity: 1;
+  visibility: visible;
+  /* 마우스를 올릴 때는 즉시 나타나도록 설정 */
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+}
+
+.custom-panel-frame {
+  border: 1.5px solid #ff008c;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: auto;
+}
+
+/* 상단 헤더 줄 */
+.panel-header-row {
+  display: flex;
+  border-bottom: 1.5px solid #ff008c;
+}
+
+.panel-no {
+  font-family: "Chakra Petch", sans-serif;
+  color: #ff008c;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-right: 1.5px solid #ff008c;
+  letter-spacing: 1px;
+}
+
+.panel-title {
+  font-family: "Chakra Petch", sans-serif;
+  color: #ff008c;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 12px;
+  padding: 8px 12px;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+}
+
+/* 중단 컨텐츠 줄 */
+.panel-body-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px;
+  gap: 12px;
+  border-bottom: 1.5px solid #ff008c;
+  height: auto;
+}
+
+/* 미니맵 영역 */
+.panel-svg-container {
+  width: 100%;
+  height: 130px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#panel-mini-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+#panel-mini-path {
+  fill: #ff008c;
+  stroke: none;
+}
+
+.panel-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.panel-item-text {
+  font-family: "Chakra Petch", sans-serif;
+  color: #ff008c;
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+
+/* 하단 설명 줄 */
+.panel-footer-row {
+  padding: 10px 12px;
+  height: auto;
+}
+
+.panel-desc {
+  color: #ff008c;
+  font-family: "Chakra Petch", sans-serif;
+  font-size: 10.5px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* ==========================================
+   인트로 로딩 화면 스타일
+   ========================================== */
+
+#intro-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Chakra Petch", sans-serif;
+  transition:
+    opacity 0.6s ease,
+    visibility 0.6s ease;
+}
+
+#intro-loader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 320px;
+}
+
+.loader-logo {
+  color: #ff008c;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.loader-bar-container {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 0, 127, 0.2);
+  border: 1px solid #ff008c;
+  position: relative;
+  overflow: hidden;
+}
+
+#loader-bar {
+  width: 0%;
+  height: 100%;
+  background-color: #ff008c;
+  box-shadow: 0 0 10px #ff008c;
+  transition: width 0.1s linear;
+}
+
+.loader-status {
+  color: #ffffff;
+  font-size: 11px;
+  font-style: italic;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+#loader-percent {
+  color: #ff008c;
+  font-weight: 700;
+}
+/* ==========================================
+   왼쪽 하단 고정 텍스트 스타일
+   ========================================== */
+
+.bottom-left-text-box {
+  position: absolute;
+  bottom: 40px;
+  left: 35px;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 350px;
+}
+
+.bottom-left-main-title {
+  font-family: "Chakra Petch", sans-serif;
+  color: #ff008c;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+.bottom-left-desc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bottom-left-desc-list p {
+  margin: 0;
+  font-family: "Chakra Petch", sans-serif;
+  color: #ff008c;
+  font-size: 11px;
+  font-style: italic;
+  line-height: 1.4;
+  opacity: 0.9;
+}
