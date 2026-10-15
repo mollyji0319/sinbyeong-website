@@ -175,24 +175,24 @@
         {
           id: 1,
           type: "창억떡병",
-          nickname: "김윤지",
+          nickname: "천안도 창억떡 생겨줘제발",
           content: "창억떡먹고싶어 죽는 병",
-          likes: 0,
+          likes: 97,
         },
         {
           id: 2,
           type: "집병",
           nickname: "집좀..",
           content: "저 집에 가고싶어요",
-          likes: 0,
+          likes: 184,
         },
         {
           id: 3,
-          type: "얼죽아병",
-          nickname: "얼어죽으려고",
+          type: "페르소나하고싶다",
+          nickname: "아마미야렌",
           content:
-            "손이 얼어붙어도 난 아아를 마셔야겠어 따뜻한 거 너무 맛없어...",
-          likes: 0,
+            "아 나 지금 펠리스 들어가서 미친놈들 개심시켜야하는데 이게 뭐야",
+          likes: 166,
         },
         {
           id: 4,
@@ -200,14 +200,14 @@
           nickname: "애랑 살기 힘들다",
           content:
             "자꾸 갓생 살겠다고 새벽 5시에 알람 맞추는데 안 일어나 그냥 나만 억울하게 일찍 일어난 사람 됨",
-          likes: 0,
+          likes: 153,
         },
         {
           id: 5,
           type: "집병",
           nickname: "아집가고싶다",
           content: "집에 있어도 집 가고싶고 나가도 집 가고싶고",
-          likes: 0,
+          likes: 112,
         },
       ];
 
@@ -530,23 +530,43 @@
         );
       }
 
-      function CafeteriaPage() {
-        const [gossips, setGossips] = useState(() => {
-          const saved = localStorage.getItem("sinbyung_gossips");
+      const STORAGE_KEY = "sinbyung_gossips_v2";
+      const OLD_STORAGE_KEY = "sinbyung_gossips";
+
+      function loadGossips() {
+        try {
+          // 1) 새 저장소에 데이터가 있으면 그대로 사용 (접수한 병 + 좋아요 수 모두 포함)
+          const saved = localStorage.getItem(STORAGE_KEY);
           if (saved) {
-            try {
-              const parsed = JSON.parse(saved);
-              return parsed.map((g) => ({ likes: 0, ...g }));
-            } catch (e) {
-              console.error("데이터 파싱 실패", e);
-            }
+            return JSON.parse(saved).map((g) => ({ likes: 0, ...g }));
           }
-          return initialGossips;
-        });
+
+          // 2) 예전 저장소에 접수된 병이 있으면 가져오기 (기본 5개는 새 좋아요 수로 대체)
+          const old = localStorage.getItem(OLD_STORAGE_KEY);
+          if (old) {
+            const userEntries = JSON.parse(old)
+              .filter((g) => !initialGossips.some((i) => i.id === g.id))
+              .map((g) => ({ likes: 0, ...g }));
+            return [...userEntries, ...initialGossips];
+          }
+        } catch (e) {
+          console.error("데이터 불러오기 실패", e);
+        }
+        return initialGossips;
+      }
+
+      function CafeteriaPage() {
+        const [gossips, setGossips] = useState(loadGossips);
 
         useEffect(() => {
-          localStorage.setItem("sinbyung_gossips", JSON.stringify(gossips));
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(gossips));
+          } catch (e) {
+            console.error("데이터 저장 실패", e);
+          }
         }, [gossips]);
+
+        // 이하 handleAddGossip, handleLike, return(...) 는 기존 그대로
 
         function handleAddGossip(entry) {
           setGossips((prev) => [entry, ...prev]);

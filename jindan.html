@@ -40,7 +40,8 @@
       .btn-primary,
       .btn-ghost,
       .nav-btn {
-        font-family: "SEBANG Gothic Bold", sans-serif !important;
+        font-family:
+          "SEBANG Gothic Bold", "Pretendard Variable", Pretendard, sans-serif !important;
         font-weight: 700 !important;
       }
 
@@ -417,6 +418,8 @@
         font-size: 14px;
         font-weight: 700;
 
+        text-align: left;
+
         margin-bottom: 8px;
       }
 
@@ -456,7 +459,12 @@
         margin-bottom: 40px;
       }
 
+      /* 병명(b) 글자가 아래로 치우쳐 보이는 문제 보정 */
       .result-secondary b {
+        display: inline-block;
+        position: relative;
+        top: -1px;
+
         color: var(--paper);
         font-weight: 700;
       }
@@ -634,7 +642,7 @@
         },
         X: {
           title: "비환자",
-          subtitle: "非患者 · 무증상군",
+          subtitle: "무증상군",
           desc: "특별한 증상이 없어요. 유행도, 순위도, 남의 시선도 크게 신경 쓰지 않고 그때그때 내키는 대로 반응하는 편이에요. 굳이 진단하자면 '평범함'이 가장 큰 특징이에요.",
         },
       };
