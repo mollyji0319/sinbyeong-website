@@ -5,6 +5,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "SEBANG Gothic";
+  src: url("SEBANG Gothic OTF.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
 :root {
   --accent: #ff008c;
 }
@@ -71,13 +78,17 @@ h6,
 .logo-link {
   display: inline-block;
   pointer-events: auto;
-  width: 100px;
-  margin-bottom: 8px;
+  width: 130px;
+  margin-bottom: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 .logo-img {
   height: auto;
-  width: 100%;
+  width: 115%;
   display: block;
   opacity: 0.6;
   transition: opacity 0.2s;

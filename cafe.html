@@ -14,10 +14,13 @@
     ></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap");
+
+      /* SEBANG Gothic OTF 폰트 정의 */
       @font-face {
-        font-family: "SEBANG Gothic Bold";
-        src: url("SEBANG Gothic OTF Bold.otf") format("opentype");
-        font-weight: 700;
+        font-family: "SEBANG Gothic";
+        src: url("SEBANG Gothic OTF.otf") format("opentype");
+        font-weight: 400;
         font-style: normal;
       }
 
@@ -31,8 +34,7 @@
         padding: 0;
         background-color: #000000;
         color: #ff008c;
-        font-family:
-          "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        font-family: "SEBANG Gothic", "Noto Sans KR", sans-serif;
         font-weight: 400;
         overflow: hidden;
 
@@ -44,19 +46,6 @@
 
       * {
         box-sizing: border-box;
-      }
-
-      /* 굵은 폰트(세방고딕) 적용 */
-      strong,
-      b,
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        font-family: "SEBANG Gothic Bold", sans-serif !important;
-        font-weight: 700 !important;
       }
 
       /* 배경 그리드 패턴 */
@@ -82,7 +71,6 @@
         pointer-events: none;
       }
 
-      /* 요청하신 크기 및 마진 스타일 그대로 적용 */
       #left-branding {
         position: absolute;
         top: 30px;
@@ -105,7 +93,7 @@
 
       .logo-img {
         height: auto;
-        width: 100%;
+        width: 115%;
         display: block;
         opacity: 0.6;
         transition: opacity 0.2s;
@@ -156,7 +144,6 @@
   <body>
     <div class="grid-background"></div>
 
-    <!-- 요청하신 스타일이 적용된 로고 영역 -->
     <div id="left-branding">
       <button class="logo-link" onclick="window.location.href = 'index.html'">
         <img src="로고-04.png" alt="신병 연구소 로고" class="logo-img" />
@@ -180,13 +167,27 @@
         textMuted: "#8F8B93",
       };
 
-      const fontDisplay =
-        "'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif";
+      const fontSebang = "'SEBANG Gothic', sans-serif";
+      const fontNoto = "'Noto Sans KR', sans-serif";
       const fontMono = "'JetBrains Mono', 'SF Mono', 'Consolas', monospace";
 
       const initialGossips = [
         {
           id: 1,
+          type: "창억떡병",
+          nickname: "김윤지",
+          content: "창억떡먹고싶어 죽는 병",
+          likes: 0,
+        },
+        {
+          id: 2,
+          type: "집병",
+          nickname: "집좀..",
+          content: "저 집에 가고싶어요",
+          likes: 0,
+        },
+        {
+          id: 3,
           type: "얼죽아병",
           nickname: "얼어죽으려고",
           content:
@@ -194,25 +195,18 @@
           likes: 0,
         },
         {
-          id: 2,
+          id: 4,
           type: "갓생병",
-          nickname: "얘랑 살기 힘들다",
+          nickname: "애랑 살기 힘들다",
           content:
             "자꾸 갓생 살겠다고 새벽 5시에 알람 맞추는데 안 일어나 그냥 나만 억울하게 일찍 일어난 사람 됨",
           likes: 0,
         },
         {
-          id: 3,
+          id: 5,
           type: "집병",
           nickname: "아집가고싶다",
-          content: "집에 있어도 집 가고싶고 나가도 집 가고싶고 ",
-          likes: 0,
-        },
-        {
-          id: 4,
-          type: "밈각병",
-          nickname: "영크크",
-          content: "내가 얼마나 도파민 중독인건지 감도 안 옴",
+          content: "집에 있어도 집 가고싶고 나가도 집 가고싶고",
           likes: 0,
         },
       ];
@@ -281,9 +275,9 @@
             >
               <h2
                 style={{
-                  fontFamily: fontDisplay,
+                  fontFamily: fontSebang,
                   fontSize: 26,
-                  fontWeight: 800,
+                  fontWeight: 700,
                   color: colors.text,
                   margin: 0,
                 }}
@@ -304,7 +298,7 @@
               }}
             >
               {gossips.length === 0 ? (
-                <p style={{ color: colors.textMuted, fontFamily: fontDisplay }}>
+                <p style={{ color: colors.textMuted, fontFamily: fontNoto }}>
                   아직 접수된 신병이 없습니다. 오른쪽에서 첫 사례를 신고해
                   주세요.
                 </p>
@@ -330,9 +324,9 @@
                     >
                       <span
                         style={{
-                          fontFamily: fontDisplay,
+                          fontFamily: fontSebang,
                           fontSize: 13,
-                          fontWeight: 700,
+                          fontWeight: 400,
                           color: colors.bg,
                           background: colors.pink,
                           borderRadius: 3,
@@ -343,8 +337,9 @@
                       </span>
                       <span
                         style={{
-                          fontFamily: fontMono,
-                          fontSize: 12,
+                          fontFamily: fontSebang,
+                          fontSize: 13,
+                          fontWeight: 400,
                           color: colors.textMuted,
                         }}
                       >
@@ -358,7 +353,7 @@
                     <p
                       style={{
                         margin: 0,
-                        fontFamily: fontDisplay,
+                        fontFamily: fontNoto,
                         fontSize: 14.5,
                         lineHeight: 1.6,
                         color: colors.text,
@@ -410,7 +405,7 @@
           border: `1px solid ${colors.line}`,
           borderRadius: 4,
           padding: "11px 13px",
-          fontFamily: fontDisplay,
+          fontFamily: fontNoto,
           fontSize: 14,
           color: colors.text,
           outline: "none",
@@ -418,8 +413,9 @@
 
         const labelStyle = {
           display: "block",
-          fontFamily: fontMono,
-          fontSize: 11.5,
+          fontFamily: fontSebang,
+          fontSize: 12,
+          fontWeight: 400,
           color: colors.textMuted,
           letterSpacing: 0.5,
           marginBottom: 6,
@@ -443,9 +439,9 @@
             >
               <h2
                 style={{
-                  fontFamily: fontDisplay,
+                  fontFamily: fontSebang,
                   fontSize: 26,
-                  fontWeight: 800,
+                  fontWeight: 700,
                   color: colors.text,
                   margin: 0,
                 }}
@@ -499,9 +495,9 @@
                     ...inputStyle,
                     flex: 1,
                     minHeight: 140,
-                    resize: "vertical",
+                    resize: "none" /* 오른쪽 아래 핸들 제거 */,
                     lineHeight: 1.6,
-                    fontFamily: fontDisplay,
+                    fontFamily: fontNoto,
                   }}
                   value={detail}
                   onChange={(e) => setDetail(e.target.value)}
@@ -518,7 +514,7 @@
                   padding: "13px 0",
                   border: "none",
                   borderRadius: 4,
-                  fontFamily: fontDisplay,
+                  fontFamily: fontSebang,
                   fontSize: 15,
                   fontWeight: 700,
                   cursor: isValid ? "pointer" : "not-allowed",
@@ -540,7 +536,6 @@
           if (saved) {
             try {
               const parsed = JSON.parse(saved);
-              // 기존 저장 데이터에 likes 필드가 없을 경우 보정
               return parsed.map((g) => ({ likes: 0, ...g }));
             } catch (e) {
               console.error("데이터 파싱 실패", e);
@@ -573,7 +568,7 @@
               display: "flex",
               padding: "75px 90px 60px 90px",
               background: "transparent",
-              fontFamily: fontDisplay,
+              fontFamily: fontSebang,
               gap: "24px",
             }}
           >
@@ -598,4 +593,121 @@
       root.render(<CafeteriaPage />);
     </script>
   </body>
+
+  <div class="cursor" aria-hidden="true">
+    <div class="cursor-inner">
+      <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+        <path
+          fill="#fff"
+          fill-opacity="0.3"
+          fill-rule="evenodd"
+          d="M50,4 L94,100 L50,74 L6,100 Z M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z"
+        />
+        <path
+          fill="#fff"
+          fill-opacity="0.6"
+          fill-rule="evenodd"
+          d="M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z"
+        />
+        <path fill="#fff" d="M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z" />
+      </svg>
+    </div>
+  </div>
+
+  <style>
+    .cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .cursor-ready .cursor {
+      opacity: 1;
+    }
+
+    .cursor-inner {
+      position: absolute;
+      left: -19px;
+      top: -3px;
+      width: 38px;
+      height: 42px;
+      transform: rotate(-30deg);
+      transform-origin: 50% 8%;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.55))
+        drop-shadow(0 0 14px rgba(255, 255, 255, 0.3));
+      transition:
+        transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.3s ease;
+    }
+
+    .cursor-inner svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .cursor-hover .cursor-inner,
+    .cursor-scan .cursor-inner {
+      transform: rotate(-30deg) scale(0.55);
+      filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.75))
+        drop-shadow(0 0 20px rgba(255, 255, 255, 0.45));
+    }
+
+    .cursor-down .cursor-inner {
+      transform: rotate(-30deg) scale(0.85);
+    }
+
+    html.has-custom-cursor,
+    html.has-custom-cursor * {
+      cursor: none !important;
+    }
+  </style>
+
+  <script>
+    (function () {
+      const finePointer = window.matchMedia(
+        "(hover: hover) and (pointer: fine)",
+      ).matches;
+      if (!finePointer) return;
+
+      const root = document.documentElement;
+      const cursor = document.querySelector(".cursor");
+      root.classList.add("has-custom-cursor");
+
+      window.addEventListener("mousemove", (e) => {
+        cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        root.classList.add("cursor-ready");
+      });
+
+      document.addEventListener("mouseover", (e) => {
+        const t = e.target;
+        root.classList.remove("cursor-hover", "cursor-scan");
+        if (t.closest("[data-cursor='scan']")) {
+          root.classList.add("cursor-scan");
+        } else if (t.closest("a, button, [data-cursor]")) {
+          root.classList.add("cursor-hover");
+        }
+      });
+
+      window.addEventListener("mousedown", () =>
+        root.classList.add("cursor-down"),
+      );
+      window.addEventListener("mouseup", () =>
+        root.classList.remove("cursor-down"),
+      );
+      document.addEventListener("mouseleave", () =>
+        root.classList.remove("cursor-ready"),
+      );
+      document.addEventListener("mouseenter", () =>
+        root.classList.add("cursor-ready"),
+      );
+    })();
+  </script>
 </html>

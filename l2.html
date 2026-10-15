@@ -7,14 +7,56 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap");
 
+      @font-face {
+        font-family: "SEBANG Gothic Bold";
+        src: url("SEBANG Gothic OTF Bold.otf") format("opentype");
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "HardRace";
+        src:
+          local("HardRace"),
+          url("./HardRace.woff") format("woff"),
+          url("./fonts/HardRace.woff") format("woff"),
+          url("./font/HardRace.woff") format("woff"),
+          url("./assets/fonts/HardRace.woff") format("woff"),
+          url("./assets/HardRace.woff") format("woff");
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      /* 스크롤바: 반투명 핑크 */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(18, 0, 12, 0.35);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 0, 140, 0.55);
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 0, 140, 0.8);
+        background-clip: padding-box;
+      }
+      @supports (-moz-appearance: none) {
+        html {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 0, 140, 0.55) rgba(18, 0, 12, 0.35);
+        }
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
-      }
-
-      html {
-        scroll-behavior: smooth;
       }
 
       body {
@@ -30,6 +72,16 @@
         color: #ffffff;
       }
 
+      /* 터치 기기: 브라우저 기본 스냅 사용 */
+      @media (pointer: coarse) {
+        html {
+          scroll-snap-type: y proximity;
+        }
+        .snap-section {
+          scroll-snap-align: start;
+        }
+      }
+
       /* 움직이는 배경 그라데이션 */
       .animated-gradient-bg {
         position: fixed;
@@ -37,28 +89,49 @@
         left: 0;
         width: 100%;
         height: 100%;
+        overflow: hidden;
+        background: #12000c;
+        z-index: -2;
+        transform: translateZ(0);
+      }
+
+      .animated-gradient-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 300%;
+        height: 100%;
         background: linear-gradient(
-          120deg,
+          90deg,
           #12000c,
           #3d0024,
           #12000c,
+          #3d0024 70%,
           #ff007f33
         );
-        background-size: 300% 300%;
-        animation: gradientAnimation 12s ease infinite;
-        z-index: -2;
+        will-change: transform;
+        animation: gradientMove 14s ease-in-out infinite alternate;
       }
 
-      @keyframes gradientAnimation {
-        0% {
-          background-position: 0% 50%;
+      @keyframes gradientMove {
+        from {
+          transform: translate3d(0, 0, 0);
         }
-        50% {
-          background-position: 100% 50%;
+        to {
+          transform: translate3d(-66.666%, 0, 0);
         }
-        100% {
-          background-position: 0% 50%;
-        }
+      }
+
+      /* 섹션 이동 중에는 무한 애니메이션을 잠시 멈춰 렉 방지 */
+      html.is-snapping .animated-gradient-bg::before,
+      html.is-snapping .archive-hint span,
+      html.is-snapping .hint-bubble {
+        animation-play-state: paused;
+      }
+
+      html.is-snapping .archive-item img {
+        transition: none;
       }
 
       /* 그리드 배경 패턴 */
@@ -84,7 +157,7 @@
         pointer-events: none;
       }
 
-      /* 미세한 그레인 텍스처 - 인쇄물 같은 질감 */
+      /* 미세한 그레인 텍스처 */
       .grain-overlay {
         position: fixed;
         top: 0;
@@ -92,19 +165,15 @@
         width: 100%;
         height: 100%;
         z-index: 50;
-        opacity: 0.05;
+        opacity: 0.035;
         pointer-events: none;
-        mix-blend-mode: overlay;
+        transform: translateZ(0);
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       }
 
       /* =========================================================
-         샤라락 리빌(Reveal) 인터랙션 시스템
-         - 텍스트/이미지 블록: 핑크 패널이 오른쪽으로 걷히며 콘텐츠 등장
-         - 진단 랩 컨셉에 맞춰 "스캔이 지나가며 결과가 드러난다"는
-           하나의 일관된 모션 언어로 사용
+         리빌(Reveal) 인터랙션
       ========================================================= */
-
       .reveal {
         position: relative;
         overflow: hidden;
@@ -158,68 +227,149 @@
           transform: none;
           animation: none !important;
         }
-        .scope-box.scan-reveal::before {
-          display: none;
-        }
-        .scope-box.scan-reveal img {
+        .archive-item,
+        .archive-deco {
           opacity: 1 !important;
+          transform: none !important;
+        }
+        .hero-diagonal-bg {
+          animation: none !important;
+          clip-path: var(--hero-end) !important;
         }
       }
 
-      /* 전체 페이지 컨테이너 */
-      .page-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
+      /* =========================================================
+         풀스크린 섹션 공통
+      ========================================================= */
+      .snap-section {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100svh;
         display: flex;
         flex-direction: column;
-        gap: 280px;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+      }
+
+      .section-inner {
+        width: 100%;
+        max-width: 1200px;
         position: relative;
         z-index: 2;
       }
 
-      /* 1. INTRO 섹션 */
-      .intro-section-wrapper {
-        position: relative;
-        width: 100%;
-        min-height: 600px;
-        padding-top: 20px;
+      /* =========================================================
+         1. INTRO 섹션
+      ========================================================= */
+      .intro-section {
+        --hero-end: polygon(0 0, 100% 0, 75% 100%, 0% 100%);
+        padding: 0 20px;
+        overflow: hidden;
+        align-items: stretch;
       }
 
-      /* 윗변이 긴 사다리꼴 배경 (좌측 밀착) */
       .hero-diagonal-bg {
         position: absolute;
-        top: -40px;
-        left: calc(-50vw + 50%);
+        top: 0;
+        left: 0;
         width: 80vw;
-        height: 135%;
+        height: 100%;
         background-color: #ff008c;
-        clip-path: polygon(0 0, 100% 0, 75% 100%, 0% 100%);
         z-index: 1;
         pointer-events: none;
+        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+        animation: heroFill 0.7s cubic-bezier(0.76, 0, 0.24, 1) 0.05s forwards;
       }
 
-      /* 좌측 콘텐츠 영역 */
-      .intro-content {
+      @keyframes heroFill {
+        to {
+          clip-path: var(--hero-end);
+        }
+      }
+
+      /* DNA 일러스트: 오른쪽 어두운 영역을 항상 채움 (핑크 면 아래에 깔림) */
+      .hero-dna {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50vw;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        z-index: 0;
+        pointer-events: none;
+        user-select: none;
+        opacity: 0;
+        will-change: opacity, transform;
+        animation: dnaIn 1.8s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
+      }
+
+      @keyframes dnaIn {
+        from {
+          opacity: 0;
+          transform: translateX(40px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hero-dna {
+          opacity: 1;
+          animation: none;
+        }
+      }
+
+      /* 좁은 화면에서는 핑크가 전체를 덮음 */
+      @media (max-width: 900px) {
+        .intro-section {
+          --hero-end: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        }
+        .hero-diagonal-bg {
+          width: 100%;
+        }
+        .hero-dna {
+          display: none;
+        }
+      }
+
+      .intro-inner {
         position: relative;
         z-index: 5;
-        max-width: 620px;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 4vh 0;
       }
 
+      .intro-content {
+        max-width: 860px;
+      }
+
+      /* 로고: 맨 위 왼쪽에 고정 */
       .logo-img {
-        width: 150px;
-        margin-bottom: 40px;
+        position: absolute;
+        top: clamp(20px, 4.5vh, 44px);
+        left: 0;
+        width: clamp(110px, 12vw, 150px);
+        margin-bottom: 0;
         display: inline-block;
       }
 
-      /* 로고 링크 스타일 초기화 */
       .logo-img a,
       .footer-logo a {
         display: block;
         width: 100%;
       }
 
-      /* 로고 화이트 컬러로 변환 */
       .logo-img img,
       .footer-logo img {
         width: 100%;
@@ -228,15 +378,15 @@
         filter: brightness(0) invert(1);
       }
 
-      /* 메인 글자 영역 */
+      /* 메인 글자: 더 크게 */
       .hero-title-img {
-        width: 100%;
-        max-width: 640px;
-        margin-bottom: 35px;
+        width: min(100%, 820px, 72vh);
+        margin-bottom: clamp(16px, 3.5vh, 35px);
+        margin-left: clamp(-75px, -4.5vw, -35px);
       }
 
       .hero-title-img img {
-        width: 100%;
+        width: 125%;
         height: auto;
         display: block;
         filter: brightness(0) invert(1);
@@ -247,19 +397,20 @@
         background-color: #ff008c;
         color: #ffffff;
         font-weight: 700;
-        font-size: 25px;
-        padding: 6px 20px;
-        margin-bottom: 20px;
+        font-size: clamp(1.05rem, 2.6vh, 1.6rem);
+        padding: 6px 00px;
+        margin-bottom: clamp(12px, 2vh, 20px);
         letter-spacing: -0.5px;
       }
 
       .description {
-        font-size: 0.9rem;
+        max-width: 640px;
+        font-size: clamp(0.8rem, 1.5vh, 0.95rem);
         line-height: 1.6;
         color: rgba(255, 255, 255, 0.9);
         opacity: 0;
-        animation: descFadeIn 0.9s ease forwards;
-        animation-delay: 0.95s;
+        animation: descFadeIn 0.6s ease forwards;
+        animation-delay: 0.85s;
       }
 
       @keyframes descFadeIn {
@@ -279,10 +430,25 @@
         margin-top: 15px;
       }
 
-      /* 공통 타이틀 배지 (가운데 정렬형) */
+      .hero-rise {
+        opacity: 0;
+        transform: translateY(14px);
+        animation: contentRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        animation-delay: var(--d, 0s);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hero-rise {
+          opacity: 1;
+          transform: none;
+          animation: none;
+        }
+      }
+
+      /* 공통 타이틀 배지 */
       .center-badge-wrapper {
         text-align: center;
-        margin-bottom: 40px;
+        margin-bottom: clamp(24px, 5vh, 40px);
         display: flex;
         justify-content: center;
       }
@@ -297,108 +463,241 @@
         letter-spacing: 0.5px;
       }
 
-      /* 2. RESEARCH SCOPE 섹션 */
-      .scope-section {
-        width: 100%;
-      }
-
-      .scope-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 30px;
-      }
-
-      .scope-box {
-        position: relative;
-        background-color: #d9d9d9;
-        height: 400px;
-        border-radius: 4px;
+      /* =========================================================
+         2. ARCHIVED PATHO 섹션 (가로 스크롤 갤러리)
+      ========================================================= */
+      .archive-section {
+        --tri-w: 60vw;
+        height: 100vh;
+        height: 100svh;
+        min-height: 0;
+        padding: 0;
+        display: block;
         overflow: hidden;
       }
 
-      /* 리빌용 스캔 마스크 (핑크 패널이 우측으로 걷히며 사진 노출) */
-      .scope-box.scan-reveal::before {
-        content: "";
+      @media (max-width: 900px) {
+        .archive-section {
+          --tri-w: 100vw;
+        }
+      }
+
+      .archive-viewport {
         position: absolute;
         inset: 0;
+        overflow: hidden;
+      }
+
+      @media (pointer: coarse) {
+        .archive-viewport {
+          overflow-x: auto;
+          overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
+        }
+      }
+
+      .archive-track {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        will-change: transform;
+      }
+
+      .archive-triangle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: var(--tri-w);
+        height: 100%;
         background-color: #ff008c;
-        transform: scaleX(1);
-        transform-origin: right;
-        z-index: 4;
+        clip-path: polygon(0 0, 100% 0, 0 100%);
         pointer-events: none;
       }
 
-      .scope-box.scan-reveal.is-revealed::before {
-        animation: maskSweep 0.9s cubic-bezier(0.76, 0, 0.24, 1) forwards;
-        animation-delay: var(--d, 0s);
+      /* 타이틀 + 부제 */
+      .archive-head {
+        position: absolute;
+        top: max(5vh, 28px);
+        left: max(3vw, 24px);
+        z-index: 3;
+        pointer-events: none;
       }
 
-      .scope-box.scan-reveal img {
+      .archive-title {
+        font-family: "HardRace", "Noto Sans KR", sans-serif;
+        font-size: min(3.6vw, 7vh);
+        font-weight: 400;
+        font-style: normal;
+        font-synthesis: none;
+        text-transform: uppercase;
+        line-height: 1;
+        letter-spacing: 0;
+        color: #ffffff;
+      }
+
+      .archive-sub {
+        margin-top: 16px;
+        font-size: clamp(1.4rem, 3.4vh, 2.2rem);
+        font-weight: 900;
+        line-height: 1.2;
+        color: #ffffff;
+        letter-spacing: -0.5px;
+      }
+
+      .archive-items {
+        position: absolute;
+        inset: 0;
+      }
+
+      .archive-item {
+        position: absolute;
+        container-type: inline-size;
+        background-color: #d9d9d9;
+        border-radius: 2px;
+        overflow: hidden;
         opacity: 0;
-        transition: opacity 0.5s ease var(--d, 0s);
+        transform: scale(0.85);
       }
 
-      .scope-box.scan-reveal.is-revealed img {
+      .archive-item.in {
         opacity: 1;
+        transform: none;
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
       }
 
-      /* 이미지 밝기(노출값) 10% 상향 조정 (brightness(1.1)) */
-      .scope-box img {
+      .archive-item img {
+        position: relative;
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
-        filter: brightness(1.1);
-        transition:
-          transform 0.5s ease,
-          opacity 0.5s ease var(--d, 0s);
+        transition: transform 0.5s ease;
       }
 
-      /* 호버 시 이미지가 살짝 확대되는 효과 */
-      .scope-box:hover img {
+      .archive-item:hover img {
         transform: scale(1.03);
       }
 
-      /* 진단 스캐너처럼 원형으로 열리며 나타나는 오버레이 */
-      .scope-overlay {
+      .archive-item.img-missing {
+        background: linear-gradient(135deg, #6a00ff, #ff008c 60%, #00d4ff);
+      }
+
+      .archive-item.img-missing img {
+        display: none;
+      }
+
+      .archive-item.img-missing::before {
+        content: attr(data-no);
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #ff008c; /* 핑크빛 오버레이 배경 */
+        inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 30px;
+        font-size: 24cqw;
+        font-weight: 900;
+        font-style: italic;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .archive-overlay {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(18, 0, 12, 0.72);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8cqw;
         text-align: center;
         clip-path: circle(0% at 50% 50%);
         transition: clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-        pointer-events: none; /* 오버레이가 마우스 이벤트를 방해하지 않도록 처리 */
+        pointer-events: none;
       }
 
-      /* 마우스 오버 시 오버레이가 원형으로 확장되며 등장 */
-      .scope-box:hover .scope-overlay {
+      .archive-item:hover .archive-overlay {
         clip-path: circle(75% at 50% 50%);
       }
 
-      .scope-overlay p {
+      .archive-overlay p {
         color: #ffffff;
-        font-size: 0.95rem;
-        line-height: 1.6;
+        font-size: clamp(0.62rem, 6.6cqw, 0.95rem);
+        line-height: 1.5;
         font-weight: 400;
         word-break: keep-all;
       }
 
-      /* 3. CORE PHILOSOPHY 섹션 */
-      .philosophy-section {
-        width: 100%;
+      .archive-overlay strong {
+        display: block;
+        margin-bottom: 0.4em;
+        font-weight: 900;
       }
 
+      .archive-deco {
+        position: absolute;
+        pointer-events: none;
+      }
+
+      .archive-deco svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .archive-progress {
+        position: absolute;
+        left: max(3vw, 24px);
+        right: max(3vw, 24px);
+        bottom: 3vh;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.18);
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .archive-progress-fill {
+        width: 100%;
+        height: 100%;
+        background: #ff008c;
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+
+      .archive-hint {
+        position: absolute;
+        right: max(3vw, 24px);
+        bottom: calc(3vh + 12px);
+        z-index: 5;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: rgba(255, 255, 255, 0.65);
+        pointer-events: none;
+      }
+
+      .archive-hint span {
+        display: inline-block;
+        animation: hintNudge 1.4s ease-in-out infinite;
+      }
+
+      @keyframes hintNudge {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(6px);
+        }
+      }
+
+      /* =========================================================
+         3. CORE PHILOSOPHY 섹션
+      ========================================================= */
       .philosophy-list {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: clamp(12px, 2.5vh, 20px);
         max-width: 1050px;
         margin: 0 auto;
       }
@@ -412,7 +711,7 @@
 
       .phil-item-inner {
         background-color: #1a0011;
-        padding: 24px 40px;
+        padding: clamp(16px, 3vh, 24px) 40px;
         display: flex;
         align-items: center;
         gap: 40px;
@@ -444,53 +743,47 @@
         line-height: 1.5;
       }
 
-      /* 4. NOTICE 섹션 */
-      .notice-section-wrapper {
-        position: relative;
-        margin-top: 170px;
+      @media (max-width: 700px) {
+        .phil-item-inner {
+          padding: 18px 28px 18px 20px;
+          gap: 16px;
+        }
       }
 
-      .zigzag-divider {
-        width: 100%;
-        height: 45px;
-        background: #ff008c;
-        clip-path: polygon(
-          0 100%,
-          5% 0,
-          10% 100%,
-          15% 0,
-          20% 100%,
-          25% 0,
-          30% 100%,
-          35% 0,
-          40% 100%,
-          45% 0,
-          50% 100%,
-          55% 0,
-          60% 100%,
-          65% 0,
-          70% 100%,
-          75% 0,
-          80% 100%,
-          85% 0,
-          90% 100%,
-          95% 0,
-          100% 100%
-        );
-        margin-bottom: -2px;
+      /* =========================================================
+         4. NOTICE 섹션
+      ========================================================= */
+      .notice-section-wrapper {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
       }
 
       .notice-box {
+        flex: 1;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         background-color: #ff008c;
-        padding: 50px 40px 130px 40px;
+        padding: 50px 40px;
         text-align: center;
         color: #12000c;
       }
 
       .warning-icon {
-        font-size: 2.8rem;
-        margin-bottom: 15px;
-        color: #12000c;
+        width: clamp(110px, 17vh, 190px);
+        margin: 0 auto 28px;
+      }
+
+      .warning-icon svg {
+        display: block;
+        width: 100%;
+        height: auto;
       }
 
       .notice-title {
@@ -526,9 +819,148 @@
         font-weight: 400;
       }
 
+      .footer-logo-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+
       .footer-logo {
         width: 140px;
         margin: 0 auto;
+      }
+
+      .logo-hint {
+        opacity: 0;
+      }
+
+      .logo-hint.is-revealed {
+        animation: hintFade 0.6s ease forwards;
+        animation-delay: var(--d, 0s);
+      }
+
+      @keyframes hintFade {
+        to {
+          opacity: 1;
+        }
+      }
+
+      .hint-bubble {
+        position: relative;
+        display: inline-block;
+        background-color: #12000c;
+        color: #ffffff;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        line-height: 1.4;
+        padding: 10px 18px;
+        border-radius: 4px;
+        box-shadow: 0 6px 18px rgba(18, 0, 12, 0.35);
+        animation: hintBob 2s ease-in-out infinite;
+      }
+
+      .hint-bubble::before {
+        content: "";
+        position: absolute;
+        top: -7px;
+        left: 50%;
+        margin-left: -7px;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-bottom: 7px solid #12000c;
+      }
+
+      @keyframes hintBob {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hint-bubble {
+          animation: none;
+        }
+      }
+
+      /* =========================================================
+         커스텀 마우스 커서
+      ========================================================= */
+      .cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .cursor-ready .cursor {
+        opacity: 1;
+      }
+
+      .cursor-inner {
+        position: absolute;
+        left: -19px;
+        top: -3px;
+        width: 38px;
+        height: 42px;
+        transform: rotate(-30deg);
+        transform-origin: 50% 8%;
+        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.55))
+          drop-shadow(0 0 14px rgba(255, 255, 255, 0.3));
+        transition:
+          transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.3s ease;
+      }
+
+      .cursor-inner svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      .cursor-hover .cursor-inner,
+      .cursor-scan .cursor-inner {
+        transform: rotate(-30deg) scale(0.55);
+        filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.75))
+          drop-shadow(0 0 20px rgba(255, 255, 255, 0.45));
+      }
+
+      .cursor-down .cursor-inner {
+        transform: rotate(-30deg) scale(0.85);
+      }
+
+      html.has-custom-cursor,
+      html.has-custom-cursor * {
+        cursor: none !important;
+      }
+
+      /* =========================================================
+         SEBANG Gothic Bold 적용 (작은 본문 제외, 제목/배지/라벨류)
+         ※ 본문(.description, .phil-text p, .notice-rules li, .archive-overlay p)은 Noto Sans KR 유지
+      ========================================================= */
+      .section-badge,
+      .center-badge,
+      .phil-number,
+      .phil-text h3,
+      .archive-sub,
+      .archive-hint,
+      .archive-overlay strong,
+      .notice-title,
+      .hint-bubble {
+        font-family: "SEBANG Gothic Bold", "Noto Sans KR", sans-serif;
+        font-weight: 700;
+        font-synthesis: none;
       }
     </style>
   </head>
@@ -537,173 +969,203 @@
     <div class="grid-background"></div>
     <div class="grain-overlay"></div>
 
-    <div class="page-container">
-      <!-- 1. INTRO 섹션 -->
-      <div class="intro-section-wrapper">
-        <div class="hero-diagonal-bg"></div>
+    <!-- 커스텀 커서 -->
+    <div class="cursor" aria-hidden="true">
+      <div class="cursor-inner">
+        <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+          <path
+            fill="#fff"
+            fill-opacity="0.3"
+            fill-rule="evenodd"
+            d="M50,4 L94,100 L50,74 L6,100 Z M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z"
+          />
+          <path
+            fill="#fff"
+            fill-opacity="0.6"
+            fill-rule="evenodd"
+            d="M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z"
+          />
+          <path fill="#fff" d="M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z" />
+        </svg>
+      </div>
+    </div>
 
-        <div class="intro-content">
-          <div class="logo-img reveal" data-reveal style="--d: 0s">
+    <main id="pager">
+      <!-- 1. INTRO 섹션 -->
+      <section class="snap-section intro-section">
+        <div class="hero-diagonal-bg"></div>
+        <img class="hero-dna" src="./DNA.PNG" alt="" aria-hidden="true" />
+
+        <div class="intro-inner">
+          <div class="logo-img hero-rise" style="--d: 0.3s">
             <a href="index.html">
               <img src="./로고-04.png" alt="Patho Lab Logo" />
             </a>
           </div>
-          <div class="hero-title-img reveal" data-reveal style="--d: 0.18s">
-            <img
-              src="./메인글자-022.png"
-              alt="DIAGNOSING, THE NEXT BIG TREND"
-            />
-          </div>
-          <div class="section-badge reveal" data-reveal style="--d: 0.58s">
-            INTRO : 우리는 왜 이토록 이상한가
-          </div>
-          <div class="description">
-            <p>
-              디지털 대전환의 시대를 지나, 우리는 매일 아침 눈을 뜨자마자
-              알고리즘의 바다로 다이브합니다. 타임라인은 끊임없이 새로운 자극을
-              주입하고, 우리의 뇌는 웃음의 호흡에 맞춰 재조립되었습니다.
-            </p>
-            <p>
-              과거의 의학은 신체의 결손을 치료했으나, 신병연구소(新病研究所)는
-              현대인이 미디어 환경 속에서 자발적으로 감염되는 '정신적·문화적
-              변이 현상'을 주목합니다. 명확한 병명은 없으나 모두가 알고 있는
-              모순적인 행동 양식, 예를 들면 타인의 시선을 극도로 의식하면서도
-              무심한 척 코스프레를 하거나, 인터넷 온라인으로 소통이 가능한
-              기묘한 상태를 우리는 '신병(新病)'이라 명명합니다. 본 연구소는 이
-              가상의 바이러스들이 어떻게 대중의 뇌를 잠식하고 있는지 추적합니다.
-            </p>
+          <div class="intro-content">
+            <div class="hero-title-img hero-rise" style="--d: 0.4s">
+              <img
+                src="./메인글자-022.png"
+                alt="DIAGNOSING, THE NEXT BIG TREND"
+              />
+            </div>
+            <div class="section-badge hero-rise" style="--d: 0.6s">
+              INTRO : 우리는 왜 이토록 이상한가
+            </div>
+            <div class="description">
+              <p>
+                디지털 대전환의 시대를 지나, 우리는 매일 아침 눈을 뜨자마자
+                알고리즘의 바다로 다이브합니다. 타임라인은 끊임없이 새로운
+                자극을 주입하고, 우리의 뇌는 웃음의 호흡에 맞춰
+                재조립되었습니다.
+              </p>
+              <p>
+                과거의 의학은 신체의 결손을 치료했으나, 신병연구소(新病研究所)는
+                현대인이 미디어 환경 속에서 자발적으로 감염되는 '정신적·문화적
+                변이 현상'을 주목합니다. 명확한 병명은 없으나 모두가 알고 있는
+                모순적인 행동 양식, 예를 들면 타인의 시선을 극도로 의식하면서도
+                무심한 척 코스프레를 하거나, 인터넷 온라인으로 소통이 가능한
+                기묘한 상태를 우리는 '신병(新病)'이라 명명합니다. 본 연구소는 이
+                가상의 바이러스들이 어떻게 대중의 뇌를 잠식하고 있는지
+                추적합니다.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- 2. RESEARCH SCOPE 섹션 -->
-      <section class="scope-section">
-        <div class="center-badge-wrapper">
-          <div class="center-badge reveal" data-reveal>
-            RESEARCH SCOPE : 연구 분야 및 대상
+      <!-- 2. ARCHIVED PATHO 섹션 (가로 스크롤) -->
+      <section class="snap-section archive-section">
+        <div class="archive-viewport">
+          <div class="archive-track">
+            <div class="archive-triangle"></div>
+            <div class="archive-head">
+              <h2 class="archive-title">Archived<br />Patho</h2>
+              <p class="archive-sub">우리가 연구한 신병</p>
+            </div>
+            <div class="archive-items"></div>
           </div>
         </div>
-        <div class="scope-grid">
-          <!-- 첫 번째 박스 -->
-          <div class="scope-box scan-reveal" data-reveal style="--d: 0s">
-            <img src="./임시1.png" alt="Research Scope 1" />
-            <div class="scope-overlay">
-              <p>
-                <strong>특이증상 아카이빙:</strong> 인터넷 커뮤니티, SNS 피드,
-                숏폼 알고리즘 속에서 포착되는 현대인 특유의 화행(話行)과 생활
-                습관 연구
-              </p>
-            </div>
-          </div>
-          <!-- 두 번째 박스 -->
-          <div class="scope-box scan-reveal" data-reveal style="--d: 0.15s">
-            <img src="./임시2.png" alt="Research Scope 2" />
-            <div class="scope-overlay">
-              <p>
-                <strong>증후군 분류학:</strong> '홍대병'을 비롯해 타인의 시선과
-                자기 검열, 알고리즘 피로도가 만들어낸 다채로운 현대적 결핍 진단
-              </p>
-            </div>
-          </div>
-          <!-- 세 번째 박스 -->
-          <div class="scope-box scan-reveal" data-reveal style="--d: 0.3s">
-            <img src="./임시3.png" alt="Research Scope 3" />
-            <div class="scope-overlay">
-              <p>
-                <strong>인터랙티브 진단:</strong> 웹사이트를 방문한 사용자의
-                행동 패턴과 성향을 실시간으로 분석하여, 맞춤형 신종 질병 처방전
-                발행
-              </p>
-            </div>
-          </div>
+        <div class="archive-hint">SCROLL <span>→</span></div>
+        <div class="archive-progress">
+          <div class="archive-progress-fill"></div>
         </div>
       </section>
 
       <!-- 3. CORE PHILOSOPHY 섹션 -->
-      <section class="philosophy-section">
-        <div class="center-badge-wrapper">
-          <div class="center-badge reveal" data-reveal>
-            CORE PHILOSOPHY : 연구소 3대 강령
-          </div>
-        </div>
-        <div class="philosophy-list">
-          <div class="phil-item">
-            <div class="phil-item-inner reveal" data-reveal style="--d: 0s">
-              <div class="phil-number">01</div>
-              <div class="phil-text">
-                <h3>과잉 각성 상태의 방치</h3>
-                <p>
-                  현대인은 너무 많은 정보를 실시간으로 처리하다가 뇌가 과열되어
-                  멈추는 '디지털 방열 상태'에 빠져 있습니다. 우리는 이를
-                  방치하지 않고 예술적·시각적 데이터로 박제합니다.
-                </p>
-              </div>
+      <section class="snap-section philosophy-section">
+        <div class="section-inner">
+          <div class="center-badge-wrapper">
+            <div class="center-badge reveal" data-reveal>
+              CORE PHILOSOPHY : 연구소 3대 강령
             </div>
           </div>
-          <div class="phil-item">
-            <div class="phil-item-inner reveal" data-reveal style="--d: 0.12s">
-              <div class="phil-number">02</div>
-              <div class="phil-text">
-                <h3>비생산적 가십의 학술화</h3>
-                <p>
-                  쓸데없어 보이는 인터넷 밈과 트렌드를 고도의 학술적 연구
-                  대상처럼 진지하게 다룸으로써, 무의미 속에 숨겨진 시대의 진짜
-                  욕망을 해부합니다.
-                </p>
+          <div class="philosophy-list">
+            <div class="phil-item">
+              <div class="phil-item-inner reveal" data-reveal style="--d: 0s">
+                <div class="phil-number">01</div>
+                <div class="phil-text">
+                  <h3>과잉 각성 상태의 방치</h3>
+                  <p>
+                    현대인은 너무 많은 정보를 실시간으로 처리하다가 뇌가
+                    과열되어 멈추는 '디지털 방열 상태'에 빠져 있습니다. 우리는
+                    이를 방치하지 않고 예술적·시각적 데이터로 박제합니다.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="phil-item">
-            <div class="phil-item-inner reveal" data-reveal style="--d: 0.24s">
-              <div class="phil-number">03</div>
-              <div class="phil-text">
-                <h3>증상의 상호 공유와 연대</h3>
-                <p>
-                  나만 이상한 게 아니라는 안도감을 제공하고, 각자의 소소한
-                  정신적 변이 증상을 투명하게 고백할 수 있는 안전한 연구 공간을
-                  지향합니다.
-                </p>
+            <div class="phil-item">
+              <div
+                class="phil-item-inner reveal"
+                data-reveal
+                style="--d: 0.12s"
+              >
+                <div class="phil-number">02</div>
+                <div class="phil-text">
+                  <h3>비생산적 가십의 학술화</h3>
+                  <p>
+                    쓸데없어 보이는 인터넷 밈과 트렌드를 고도의 학술적 연구
+                    대상처럼 진지하게 다룸으로써, 무의미 속에 숨겨진 시대의 진짜
+                    욕망을 해부합니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="phil-item">
+              <div
+                class="phil-item-inner reveal"
+                data-reveal
+                style="--d: 0.24s"
+              >
+                <div class="phil-number">03</div>
+                <div class="phil-text">
+                  <h3>증상의 상호 공유와 연대</h3>
+                  <p>
+                    나만 이상한 게 아니라는 안도감을 제공하고, 각자의 소소한
+                    정신적 변이 증상을 투명하게 고백할 수 있는 안전한 연구
+                    공간을 지향합니다.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-    </div>
 
-    <!-- 4. NOTICE FOR VISITORS 섹션 -->
-    <div class="notice-section-wrapper">
-      <div class="zigzag-divider"></div>
-      <div class="notice-box">
-        <div class="warning-icon">⚠️</div>
-        <h2 class="notice-title reveal" data-reveal>
-          05. NOTICE FOR VISITORS : 방문자 필독 수칙
-        </h2>
-        <ul class="notice-rules reveal" data-reveal style="--d: 0.1s">
-          <li>
-            1. 본 웹사이트는 가상의 질병을 다루고 있으나, 모든 증상은 당신의
-            일상과 놀라울 정도로 일치할 수 있습니다.
-          </li>
-          <li>
-            2. 웹사이트 구경이 끝나고 나면 반드시 좌측 상단 로고를 눌러
-            메인화면으로 이동해 주십시오.
-          </li>
-          <li>
-            3. 스크롤을 내리는 동안 발생하는 심리적 동요나 가벼운 자조(自嘲)는
-            연구소가 책임지지 않습니다.
-          </li>
-        </ul>
-        <div class="footer-logo reveal" data-reveal style="--d: 0.2s">
-          <a href="index.html">
-            <img src="./로고-04.png" alt="Patho Lab Logo" />
-          </a>
+      <!-- 4. NOTICE FOR VISITORS 섹션 -->
+      <section class="snap-section notice-section-wrapper" style="padding: 0">
+        <div class="notice-box">
+          <div class="warning-icon" aria-hidden="true">
+            <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M50 6 L95 85 L5 85 Z"
+                fill="none"
+                stroke="#fff"
+                stroke-width="6.5"
+                stroke-linejoin="miter"
+                stroke-miterlimit="10"
+              />
+              <rect x="46.5" y="30" width="7" height="31" fill="#fff" />
+              <rect x="46.5" y="67" width="7" height="7" fill="#fff" />
+            </svg>
+          </div>
+          <h2 class="notice-title reveal" data-reveal>
+            NOTICE FOR VISITORS : 방문자 필독 수칙
+          </h2>
+          <ul class="notice-rules reveal" data-reveal style="--d: 0.1s">
+            <li>
+              1. 본 웹사이트는 가상의 질병을 다루고 있으나, 모든 증상은 당신의
+              일상과 놀라울 정도로 일치할 수 있습니다.
+            </li>
+            <li>
+              2. 웹사이트 구경이 끝나고 나면 반드시 좌측 상단 로고를 눌러
+              메인화면으로 이동해 주십시오.
+            </li>
+            <li>
+              3. 스크롤을 내리는 동안 발생하는 심리적 동요나 가벼운 자조(自嘲)는
+              연구소가 책임지지 않습니다.
+            </li>
+          </ul>
+          <div class="footer-logo-wrap">
+            <div class="footer-logo reveal" data-reveal style="--d: 0.2s">
+              <a href="index.html">
+                <img src="./로고-04.png" alt="Patho Lab Logo" />
+              </a>
+            </div>
+            <div class="logo-hint" data-reveal style="--d: 0.9s">
+              <div class="hint-bubble">
+                로고를 누르면 메인화면으로 이동합니다.
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
     <script>
-      // 뷰포트에 들어오는 순간 리빌 애니메이션을 트리거.
-      // 히어로 영역은 페이지 로드 시 이미 화면 안에 있으므로
-      // 각 요소에 지정된 --d(지연 시간) 값에 따라 순차적으로 등장한다.
+      /* =========================================================
+         1) 리빌 애니메이션 트리거
+      ========================================================= */
       const revealTargets = document.querySelectorAll("[data-reveal]");
 
       if ("IntersectionObserver" in window) {
@@ -718,12 +1180,491 @@
           },
           { threshold: 0.2, rootMargin: "0px 0px -40px 0px" },
         );
-
         revealTargets.forEach((el) => observer.observe(el));
       } else {
-        // IntersectionObserver 미지원 환경 폴백
         revealTargets.forEach((el) => el.classList.add("is-revealed"));
       }
+
+      if (document.fonts && document.fonts.load) {
+        document.fonts.load('1em "HardRace"', "ARCHIVED").then((f) => {
+          if (!f.length)
+            console.warn(
+              "[HardRace] 폰트를 찾지 못했습니다. HardRace.woff 파일 위치를 확인하세요.",
+            );
+        });
+      }
+
+      /* =========================================================
+         2) ARCHIVED PATHO : 일러스트 무작위 배치 (겹침 없음)
+         ※ 이미지 경로/제목/설명은 여기서 수정하세요.
+      ========================================================= */
+      const ARCHIVE_ITEMS = [
+        {
+          src: "fuck.webp",
+          title: "뻐큐 정병",
+          desc: "지절 비율 왜곡 인식 기반 모욕 표현 기피 장애",
+        },
+        {
+          src: "gd.webp",
+          title: "GD병",
+          desc: "G-Dragon 기반 정체성 동화 장애",
+        },
+        {
+          src: "gangnam.webp",
+          title: "강남병",
+          desc: "상업적 성과 기반 취향 정당화 증후군",
+        },
+        {
+          src: "fru.webp",
+          title: "과일 차원 달라병",
+          desc: "아열대 과실 당도 및 가성비 기반 비교 강박 장애",
+        },
+        {
+          src: "chingi.webp",
+          title: "칭기즈카병",
+          desc: "자기중심적 가치 동기화 강박 장애",
+        },
+        {
+          src: "hongdae.webp",
+          title: "홍대병",
+          desc: "비주류 선호성 과잉 증후군",
+        },
+        {
+          src: "japansky.webp",
+          title: "일본 하늘 차원 달라병",
+          desc: "특정 기상 현상 기반 투사적 미화 장애",
+        },
+        {
+          src: "joong2.webp",
+          title: "중2병",
+          desc: "청소년기 자아 중심성 과잉 및 환상적 전능감 장애",
+        },
+        {
+          src: "joongang.webp",
+          title: "중안부정병",
+          desc: "안면 중앙부 비율 집착성 신체 변형 장애",
+        },
+        {
+          src: "mbti.webp",
+          title: "mbti 과몰입 증후군",
+          desc: "16유형 기반 인지적 정형화 및 타자 범주화 장애",
+        },
+        {
+          src: "seoul.webp",
+          title: "서울병",
+          desc: "특정 도시 기반 향수적 일상 부적응 장애",
+        },
+        {
+          src: "sns.webp",
+          title: "인스타병",
+          desc: "전시적 일상 기록 및 디지털 승인 욕구 장애",
+        },
+        {
+          src: "star.webp",
+          title: "연예인병",
+          desc: "자기중심적 인지도 과대평가 및 시선 의식 증후군",
+        },
+        {
+          src: "도끼.webp",
+          title: "도끼병",
+          desc: "관계적 아전인수 및 호감 망상 증후군",
+        },
+        {
+          src: "선비.webp",
+          title: "선비병",
+          desc: "허위 중림 위장 契 범철함 장애",
+        },
+        {
+          src: "향수병.webp",
+          title: "향수병",
+          desc: "특성 이상화 현일 부적응 장애",
+        },
+      ];
+
+      const archive = { hx: 0, target: 0, max: 0, lastShown: -1, build: null };
+
+      (function () {
+        const section = document.querySelector(".archive-section");
+        const viewport = section.querySelector(".archive-viewport");
+        const track = section.querySelector(".archive-track");
+        const layer = section.querySelector(".archive-items");
+        const tri = section.querySelector(".archive-triangle");
+        const bar = section.querySelector(".archive-progress-fill");
+        const SEED = 20260; // 시드를 바꾸면 배치가 달라집니다
+        const COARSE = window.matchMedia("(pointer: coarse)").matches;
+
+        const io =
+          "IntersectionObserver" in window
+            ? new IntersectionObserver(
+                (entries) =>
+                  entries.forEach((en) => {
+                    if (en.isIntersecting) {
+                      en.target.classList.add("in");
+                      io.unobserve(en.target);
+                    }
+                  }),
+                { threshold: 0.05 },
+              )
+            : null;
+        const appear = (el) => (io ? io.observe(el) : el.classList.add("in"));
+
+        function mulberry32(a) {
+          return function () {
+            a |= 0;
+            a = (a + 0x6d2b79f5) | 0;
+            let t = Math.imul(a ^ (a >>> 15), 1 | a);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        const DECO_RANDOM_ROTATE = true;
+        const makeStar = (tips, innerRatio, color) => {
+          const pts = [];
+          for (let k = 0; k < tips * 2; k++) {
+            const ang = -Math.PI / 2 + (k * Math.PI) / tips;
+            const r = k % 2 === 0 ? 50 : 50 * innerRatio;
+            pts.push(
+              (50 + r * Math.cos(ang)).toFixed(2) +
+                "," +
+                (50 + r * Math.sin(ang)).toFixed(2),
+            );
+          }
+          return `<svg viewBox="0 0 100 100" aria-hidden="true"><polygon points="${pts.join(" ")}" fill="${color}"/></svg>`;
+        };
+        const PINK_STAR = makeStar(8, 0.37, "#ff008c");
+        const WHITE_STAR = makeStar(4, 0.2, "#ffffff");
+
+        function build() {
+          if (io) io.disconnect();
+          layer.innerHTML = "";
+
+          const H = viewport.clientHeight;
+          const VW = window.innerWidth;
+          // 스크롤 길이 (줄임): 3.2 / 4.6 → 1.9 / 3.0
+          const L = Math.round(Math.max(VW * 1.9, H * 3.0));
+          track.style.width = L + "px";
+
+          const rand = mulberry32(SEED);
+          const triW = tri.offsetWidth;
+          const gap = H * 0.025; // 사진 간격 (좁힘)
+          const topM = H * 0.07;
+          const botM = H * 0.86;
+          const placed = [];
+          const triEdge = (y) => triW * (1 - y / H);
+
+          function fits(x, y, w, h, g) {
+            if (x < 0 || x + w > L - H * 0.08) return false;
+            if (y < H * 0.04 || y + h > botM + H * 0.04) return false;
+            if (x < triEdge(y) + g) return false;
+            for (const p of placed) {
+              if (
+                x < p.x + p.w + g &&
+                x + w + g > p.x &&
+                y < p.y + p.h + g &&
+                y + h + g > p.y
+              ) {
+                return false;
+              }
+            }
+            return true;
+          }
+
+          const N = ARCHIVE_ITEMS.length;
+          const rangeStart = triW * 0.3;
+          const rangeEnd = L - H * 0.45;
+          const seg = (rangeEnd - rangeStart) / N;
+
+          ARCHIVE_ITEMS.forEach((it, i) => {
+            // 사진 크기 (작게): 0.17+0.15 → 0.12+0.09
+            let size = H * (0.12 + rand() * 0.09);
+            let spot = null;
+            for (let a = 0; a < 80 && !spot; a++) {
+              if (a > 0 && a % 20 === 0) size *= 0.9;
+              const cx = rangeStart + (i + 0.15 + rand() * 0.7) * seg;
+              const x = cx - size / 2 + (rand() - 0.5) * seg * 0.5;
+              const y = topM + rand() * Math.max(1, botM - topM - size);
+              if (fits(x, y, size, size, gap)) spot = { x, y };
+            }
+            if (!spot) return;
+            placed.push({ x: spot.x, y: spot.y, w: size, h: size });
+
+            const el = document.createElement("div");
+            el.className = "archive-item";
+            el.dataset.cursor = "scan";
+            el.dataset.no = String(i + 1).padStart(2, "0");
+            el.style.cssText = `left:${spot.x}px;top:${spot.y}px;width:${size}px;height:${size}px;`;
+            el.innerHTML =
+              `<img src="${it.src}" alt="${it.title}" decoding="async" />` +
+              `<div class="archive-overlay"><p><strong>${it.title}</strong>${it.desc}</p></div>`;
+            const im = el.querySelector("img");
+            im.addEventListener("error", () => el.classList.add("img-missing"));
+            if (im.decode) im.decode().catch(() => {}); // 미리 디코딩해 진입 시 끊김 방지
+            layer.appendChild(el);
+            appear(el);
+          });
+
+          // 장식 요소 (개수 줄임: 15 → 10)
+          const DECO = 10;
+          for (let d = 0; d < DECO; d++) {
+            const isSparkle = rand() < 0.55;
+            const size =
+              H * (isSparkle ? 0.035 + rand() * 0.05 : 0.025 + rand() * 0.065);
+            let spot = null;
+            for (let a = 0; a < 50 && !spot; a++) {
+              const x = triW * 0.15 + rand() * (L - triW * 0.15 - size - 20);
+              const y = H * 0.04 + rand() * (botM - size);
+              if (fits(x, y, size, size, gap * 0.5)) spot = { x, y };
+            }
+            if (!spot) continue;
+            placed.push({ x: spot.x, y: spot.y, w: size, h: size });
+
+            const el = document.createElement("div");
+            el.className = "archive-deco";
+            const deg = DECO_RANDOM_ROTATE ? Math.round(rand() * 360) : 0;
+            el.style.cssText = `left:${spot.x}px;top:${spot.y}px;width:${size}px;height:${size}px;transform:rotate(${deg}deg);`;
+            el.innerHTML = isSparkle ? WHITE_STAR : PINK_STAR;
+            layer.appendChild(el);
+          }
+
+          archive.max = Math.max(0, L - VW);
+          archive.target = Math.min(archive.target, archive.max);
+          archive.hx = Math.min(archive.hx, archive.max);
+          archive.lastShown = -1;
+          updateBar();
+        }
+
+        function updateBar() {
+          const cur = COARSE ? viewport.scrollLeft : archive.hx;
+          const max = COARSE
+            ? viewport.scrollWidth - viewport.clientWidth
+            : archive.max;
+          bar.style.transform = `scaleX(${max > 0 ? cur / max : 0})`;
+        }
+
+        archive.build = build;
+        build();
+
+        if (!COARSE) {
+          (function tick() {
+            archive.hx += (archive.target - archive.hx) * 0.11;
+            if (Math.abs(archive.target - archive.hx) < 0.3)
+              archive.hx = archive.target;
+            if (archive.hx !== archive.lastShown) {
+              track.style.transform = `translate3d(${-archive.hx}px,0,0)`;
+              updateBar();
+              archive.lastShown = archive.hx;
+            }
+            requestAnimationFrame(tick);
+          })();
+        } else {
+          viewport.addEventListener("scroll", updateBar, { passive: true });
+        }
+
+        let rt;
+        window.addEventListener("resize", () => {
+          clearTimeout(rt);
+          rt = setTimeout(build, 100);
+        });
+      })();
+
+      /* =========================================================
+         2-2) 풀페이지 스냅 스크롤 + ARCHIVED 가로 스크롤 연동
+      ========================================================= */
+      (function () {
+        const finePointer = window.matchMedia(
+          "(hover: hover) and (pointer: fine)",
+        ).matches;
+        if (!finePointer) return;
+
+        const sections = Array.from(document.querySelectorAll(".snap-section"));
+        const hSection = document.querySelector(".archive-section");
+        const DURATION = 950;
+        const COOLDOWN = 350;
+        const H_SPEED = 2.2;
+        const EDGE_DWELL = 280;
+        let animating = false;
+        let lockUntil = 0;
+        let lastHEvent = 0;
+
+        const easeInOutQuart = (t) =>
+          t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+
+        function currentIndex() {
+          let idx = 0;
+          sections.forEach((s, i) => {
+            if (s.offsetTop <= window.scrollY + 2) idx = i;
+          });
+          return idx;
+        }
+
+        function animateTo(y) {
+          const startY = window.scrollY;
+          const dist = y - startY;
+          if (Math.abs(dist) < 1) return;
+          animating = true;
+          document.documentElement.classList.add("is-snapping");
+          const t0 = performance.now();
+          function frame(now) {
+            const p = Math.min((now - t0) / DURATION, 1);
+            window.scrollTo(0, startY + dist * easeInOutQuart(p));
+            if (p < 1) {
+              requestAnimationFrame(frame);
+            } else {
+              animating = false;
+              document.documentElement.classList.remove("is-snapping");
+              lockUntil = performance.now() + COOLDOWN;
+            }
+          }
+          requestAnimationFrame(frame);
+        }
+
+        function go(direction) {
+          const idx = currentIndex();
+          const next = idx + direction;
+          if (next < 0 || next >= sections.length) return;
+          const target = sections[next];
+          let y = target.offsetTop;
+          if (direction < 0) {
+            y = Math.max(
+              target.offsetTop,
+              target.offsetTop + target.offsetHeight - window.innerHeight,
+            );
+          }
+          if (target === hSection) {
+            archive.target = archive.hx = direction > 0 ? 0 : archive.max;
+            archive.lastShown = -1;
+          }
+          animateTo(y);
+        }
+
+        function canScrollInside(direction) {
+          const sec = sections[currentIndex()];
+          const top = sec.offsetTop;
+          const bottom = top + sec.offsetHeight;
+          if (direction > 0)
+            return window.scrollY + window.innerHeight < bottom - 2;
+          return window.scrollY > top + 2;
+        }
+
+        function step(dir, amountV, amountH) {
+          const sec = sections[currentIndex()];
+          if (
+            sec === hSection &&
+            Math.abs(window.scrollY - sec.offsetTop) < 3
+          ) {
+            const now = performance.now();
+            const atEdge =
+              dir > 0 ? archive.target >= archive.max - 1 : archive.target <= 1;
+            if (!atEdge) {
+              archive.target = Math.min(
+                archive.max,
+                Math.max(0, archive.target + dir * amountH),
+              );
+              lastHEvent = now;
+              return;
+            }
+            const waited = now - lastHEvent;
+            lastHEvent = now;
+            if (waited < EDGE_DWELL) return;
+          } else if (canScrollInside(dir)) {
+            window.scrollBy(0, dir * amountV);
+            return;
+          }
+          go(dir);
+        }
+
+        window.addEventListener(
+          "wheel",
+          (e) => {
+            if (e.ctrlKey) return;
+            e.preventDefault();
+            if (animating || performance.now() < lockUntil) return;
+            const d =
+              Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+            if (Math.abs(d) < 4) return;
+            const dir = d > 0 ? 1 : -1;
+            step(dir, Math.abs(d), Math.abs(d) * H_SPEED);
+          },
+          { passive: false },
+        );
+
+        window.addEventListener("keydown", (e) => {
+          const tag = (e.target.tagName || "").toLowerCase();
+          if (tag === "input" || tag === "textarea") return;
+          if (e.key === "Home") {
+            e.preventDefault();
+            if (!animating) animateTo(0);
+            return;
+          }
+          if (e.key === "End") {
+            e.preventDefault();
+            if (!animating)
+              animateTo(
+                document.documentElement.scrollHeight - window.innerHeight,
+              );
+            return;
+          }
+          let dir = 0;
+          if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(e.key))
+            dir = 1;
+          if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) dir = -1;
+          if (!dir) return;
+          e.preventDefault();
+          if (animating || performance.now() < lockUntil) return;
+          step(dir, window.innerHeight * 0.8, window.innerWidth * 0.6);
+        });
+
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            window.scrollTo(0, sections[currentIndex()].offsetTop);
+          }, 160);
+        });
+      })();
+
+      /* =========================================================
+         3) 커스텀 커서
+      ========================================================= */
+      (function () {
+        const finePointer = window.matchMedia(
+          "(hover: hover) and (pointer: fine)",
+        ).matches;
+        if (!finePointer) return;
+
+        const root = document.documentElement;
+        const cursor = document.querySelector(".cursor");
+        root.classList.add("has-custom-cursor");
+
+        window.addEventListener("mousemove", (e) => {
+          cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+          root.classList.add("cursor-ready");
+        });
+
+        document.addEventListener("mouseover", (e) => {
+          const t = e.target;
+          root.classList.remove("cursor-hover", "cursor-scan");
+          if (t.closest("[data-cursor='scan']")) {
+            root.classList.add("cursor-scan");
+          } else if (t.closest("a, button, [data-cursor]")) {
+            root.classList.add("cursor-hover");
+          }
+        });
+
+        window.addEventListener("mousedown", () =>
+          root.classList.add("cursor-down"),
+        );
+        window.addEventListener("mouseup", () =>
+          root.classList.remove("cursor-down"),
+        );
+        document.addEventListener("mouseleave", () =>
+          root.classList.remove("cursor-ready"),
+        );
+        document.addEventListener("mouseenter", () =>
+          root.classList.add("cursor-ready"),
+        );
+      })();
     </script>
   </body>
 </html>

@@ -88,7 +88,7 @@
       .logo-link {
         display: inline-block;
         pointer-events: auto;
-        width: 80px;
+        width: 130px;
         margin-bottom: 10px;
         background: none;
         border: none;
@@ -98,7 +98,7 @@
 
       .logo-img {
         height: auto;
-        width: 100%;
+        width: 115%;
         display: block;
         opacity: 0.6;
         transition: opacity 0.2s;
@@ -640,196 +640,261 @@
       };
 
       /* =====================================================
-         문항 데이터
-         - 각 선택지는 특정 증상과 느슨하게 연결되어 있지만,
-           문항 자체는 결과를 바로 유추할 수 없도록 일상적인
-           상황으로 구성했어요.
-      ===================================================== */
+     문항 데이터
+     - 선택지 문구는 증상의 키워드(순위/하늘/마스크 등)를
+       그대로 쓰지 않고, 행동·장면 위주로 다듬었어요.
+     - 무증상(X) 선택지도 다른 선택지와 같은 길이/구체성의
+       '장면'으로 써서, 혼자 밋밋해 보이지 않게 했어요.
+  ===================================================== */
 
       const QUESTIONS = [
         {
-          title: "요즘 나만 알고 있던 걸 남들에게 보여줄 때, 나는",
-          options: [
-            { text: "이미 다 알고 있었다는 티를 슬쩍 낸다", tag: "H" },
-            { text: "꼭 한번 경험해보라고 적극적으로 권한다", tag: "G" },
-            { text: "관련 순위나 별점을 같이 보여주며 설득한다", tag: "K" },
-            {
-              text: "그걸 찍은 사진 속 내 얼굴 각도부터 다시 확인한다",
-              tag: "J",
-            },
-            { text: "딱히 대단한 일도 아니라서 그냥 넘어간다", tag: "X" },
-          ],
-        },
-        {
-          title: "여행에서 돌아온 다음 날, 나는",
+          title: "새로 알게 된 걸 누군가에게 소개할 때, 나는",
           options: [
             {
-              text: "누가 알아볼까 봐 괜히 마스크를 썼던 게 떠오른다",
-              tag: "C",
-            },
-            { text: "그곳 스타일대로 옷을 다시 맞춰본다", tag: "D" },
-            {
-              text: "거기 하늘 사진을 보며 여기랑 다르다고 생각한다",
-              tag: "N",
-            },
-            { text: "여독 풀고 그냥 평소처럼 지낸다", tag: "X" },
-          ],
-        },
-        {
-          title: "특별한 날, 기록을 남길 때 나는",
-          options: [
-            { text: "반응이 궁금해서 몇 분 간격으로 계속 확인한다", tag: "I" },
-            { text: "설명글에 의미심장한 문장을 하나쯤 넣는다", tag: "M" },
-            {
-              text: "이걸 알아보는 사람이 몇 없을 거라 생각하며 올린다",
+              text: "'아 그거? 나 예전부터 알았는데'가 입끝까지 올라온다",
               tag: "H",
             },
-            { text: "다들 꼭 보라고 주변에 링크를 보낸다", tag: "G" },
-            { text: "따로 기록하지 않고 그 순간만 즐긴다", tag: "X" },
-          ],
-        },
-        {
-          title: "영상통화나 사진 속 내 모습을 볼 때 가장 먼저 보는 건",
-          options: [
-            { text: "얼굴 비율, 특히 눈코입 사이 간격", tag: "J" },
-            { text: "손을 어떻게 두고 있는지", tag: "P" },
-            { text: "내 표정이 남들 눈에 어떻게 보일지", tag: "C" },
-            { text: "옷이나 스타일이 평소 느낌으로 나왔는지", tag: "D" },
-            { text: "딱히 신경 쓰지 않고 그냥 넘어간다", tag: "X" },
-          ],
-        },
-        {
-          title: "여행 다녀와서 사람들에게 제일 하고 싶은 말은",
-          options: [
-            { text: "거기 하늘이랑 풍경이 진짜 다르다는 것", tag: "N" },
-            { text: "거기 음식이 얼마나 저렴하고 맛있었는지", tag: "F" },
-            { text: "사진이 잘 나온 곳이 얼마나 많았는지", tag: "I" },
-            { text: "그때 느낀 감정을 나만 아는 것처럼 얘기한다", tag: "M" },
-            { text: "그냥 잘 다녀왔다고 편하게 말한다", tag: "X" },
-          ],
-        },
-        {
-          title: "누가 나에게 뭔가를 추천하면, 나는",
-          options: [
-            { text: "먼저 순위나 후기 개수를 확인한다", tag: "K" },
-            { text: "괜찮으면 나도 남들에게 적극적으로 다시 권한다", tag: "G" },
+            { text: "상대가 직접 해볼 때까지 자꾸 그 얘기를 꺼낸다", tag: "G" },
+            { text: "내가 믿는 근거를 숫자부터 꺼내 놓는다", tag: "K" },
             {
-              text: "관련 사진이 있으면 내가 어떻게 나올지부터 생각한다",
+              text: "같이 찍은 사진에서 내 옆모습이 먼저 눈에 들어온다",
+              tag: "J",
+            },
+            { text: "상대가 던진 다른 얘기에 어느새 더 빠져든다", tag: "X" },
+          ],
+        },
+        {
+          title: "여행에서 돌아온 다음 날 아침, 나는",
+          options: [
+            {
+              text: "현지에서 누가 날 쳐다본 것 같던 순간이 불쑥 떠오른다",
+              tag: "C",
+            },
+            {
+              text: "여행 내내 닮고 싶던 그 사람의 분위기로 코디를 맞춰본다",
+              tag: "D",
+            },
+            {
+              text: "창밖을 보다가 어제까지 보던 풍경이 자꾸 겹쳐 보인다",
+              tag: "N",
+            },
+            {
+              text: "빨래부터 돌리고 냉장고에 뭐가 남았는지 확인한다",
+              tag: "X",
+            },
+          ],
+        },
+        {
+          title: "특별한 날의 기록을 남길 때, 나는",
+          options: [
+            { text: "올리고 나서 알림창을 몇 번이고 열어본다", tag: "I" },
+            {
+              text: "오늘의 서사를 한 문장에 압축하느라 한참 고른다",
+              tag: "M",
+            },
+            { text: "아는 사람만 알아볼 디테일을 일부러 숨겨 둔다", tag: "H" },
+            { text: "'이거 꼭 봐' 하고 단톡방에 바로 뿌린다", tag: "G" },
+            { text: "저장만 해두고 몇 달 뒤 우연히 다시 열어본다", tag: "X" },
+          ],
+        },
+        {
+          title: "영상통화나 사진 속 내 모습을 볼 때 가장 먼저 걸리는 건",
+          options: [
+            { text: "이목구비 사이의 거리감", tag: "J" },
+            { text: "손이 어떤 모양으로 놓여 있는지", tag: "P" },
+            { text: "지금 이 장면을 누가 본다면 어떻게 생각할지", tag: "C" },
+            {
+              text: "분위기가 내가 좋아하는 그 사람의 느낌과 닮았는지",
+              tag: "D",
+            },
+            { text: "배경에 찍힌 물건이나 지나가던 사람", tag: "X" },
+          ],
+        },
+        {
+          title: "여행 다녀와서 사람들에게 제일 하고 싶은 이야기는",
+          options: [
+            { text: "거기서는 하늘 색부터가 달랐다는 이야기", tag: "N" },
+            {
+              text: "그 돈으로 그만큼 먹을 수 있다는 게 말이 되냐는 이야기",
+              tag: "F",
+            },
+            { text: "어디서 찍어도 결과물이 나왔다는 이야기", tag: "I" },
+            {
+              text: "말로는 설명이 안 되는 어떤 감정이 있었다는 이야기",
+              tag: "M",
+            },
+            { text: "비행기 옆자리 사람이 너무 웃겼다는 이야기", tag: "X" },
+          ],
+        },
+        {
+          title: "누가 나에게 뭔가를 추천해 주면, 나는",
+          options: [
+            { text: "검색해서 다른 사람들의 평가부터 살펴본다", tag: "K" },
+            {
+              text: "좋으면 곧바로 다른 사람에게 똑같이 권하고 싶어진다",
+              tag: "G",
+            },
+            {
+              text: "그곳에 가면 내 사진이 어떻게 나올지 상상해본다",
               tag: "J",
             },
             {
-              text: "화가 나는 상황이면 손짓보다 말로 정리하는 편이다",
+              text: "고맙다는 표현을 어떤 제스처로 할지 은근히 고민한다",
               tag: "P",
             },
-            { text: "관심 없으면 그냥 안 한다고 말한다", tag: "X" },
+            {
+              text: "추천해준 사람 표정이 좋아 보여서 일단 기분이 좋다",
+              tag: "X",
+            },
           ],
         },
         {
-          title: "다음 여행 계획을 세울 때 가장 먼저 찾아보는 건",
+          title: "다음 여행 계획을 세울 때 가장 먼저 열어보는 건",
           options: [
-            { text: "그 나라 날씨나 하늘 사진", tag: "N" },
-            { text: "현지 과일이나 음식 가격", tag: "F" },
-            { text: "사진 찍기 좋은 장소 리스트", tag: "I" },
-            { text: "그냥 그때그때 마음 가는 대로 정한다", tag: "X" },
+            {
+              text: "그 시기에 구름이나 하늘빛이 어떨지 알려주는 자료",
+              tag: "N",
+            },
+            { text: "현지 시장에서 뭘 얼마에 파는지", tag: "F" },
+            { text: "내 피드에 올리면 어울릴 장소들", tag: "I" },
+            { text: "항공권 가격 알림 설정", tag: "X" },
           ],
         },
         {
           title: "친구들과 취향 얘기를 할 때 나는",
           options: [
-            { text: "나만의 세계관이 있다고 은근히 티를 낸다", tag: "M" },
-            { text: "남들이 모르는 걸 좋아한다는 게 자랑스럽다", tag: "H" },
-            { text: "내가 좋다고 생각한 건 다들 해봤으면 한다", tag: "G" },
-            { text: "판매량이나 순위로 검증된 것만 믿는다", tag: "K" },
-            { text: "그냥 듣고 넘기는 편이다", tag: "X" },
+            { text: "내 안에 나만의 세계가 있다는 걸 슬쩍 흘린다", tag: "M" },
+            { text: "아직 덜 알려졌다는 점이 오히려 마음에 든다", tag: "H" },
+            {
+              text: "취향이 다른 사람도 한 번만 겪어보면 바뀔 거라 믿는다",
+              tag: "G",
+            },
+            { text: "많은 사람이 선택했다는 사실이 가장 믿음직하다", tag: "K" },
+            { text: "맞장구치다가 슬쩍 점심 메뉴로 화제를 돌린다", tag: "X" },
           ],
         },
         {
           title: "화가 나거나 감정을 표현해야 하는 순간, 나는",
           options: [
-            { text: "손짓보다는 표정이나 말로 대신한다", tag: "P" },
-            { text: "누가 보고 있을까 봐 한 번 더 참는다", tag: "C" },
-            { text: "평소 좋아하는 스타일대로 행동하려 한다", tag: "D" },
-            { text: "그때그때 자연스럽게 표현하고 넘어간다", tag: "X" },
+            { text: "말이나 표정으로 풀고 손은 가만히 둔다", tag: "P" },
+            { text: "주변에 누가 있는지 먼저 둘러본다", tag: "C" },
+            {
+              text: "내가 동경하는 사람이라면 어떻게 했을지 떠올린다",
+              tag: "D",
+            },
+            { text: "일단 물 한 잔 마시고 하던 일을 계속한다", tag: "X" },
           ],
         },
         {
-          title: "맛집을 고를 때 가장 중요한 기준은",
+          title: "처음 가는 식당을 고를 때 가장 끌리는 포인트는",
           options: [
-            { text: "재료나 가격 대비 만족도", tag: "F" },
-            { text: "사진이 예쁘게 나오는지", tag: "I" },
-            { text: "이 자리가 나한테 어떤 의미인지", tag: "M" },
-            { text: "남들이 아직 잘 모르는 곳인지", tag: "H" },
-            { text: "그냥 그날 먹고 싶은 걸 고른다", tag: "X" },
+            { text: "가격 대비 양과 신선함", tag: "F" },
+            { text: "빛이 잘 들고 접시가 예쁜 곳", tag: "I" },
+            { text: "이곳의 한 끼가 내게 어떤 장면으로 남을지", tag: "M" },
+            { text: "아직 줄이 길지 않은 동네 가게", tag: "H" },
+            { text: "걷다가 처음 눈에 들어온 곳", tag: "X" },
           ],
         },
         {
           title: "옷이나 아이템을 고를 때 가장 신경 쓰는 건",
           options: [
-            { text: "얼마나 많이 팔렸고 평가가 좋은지", tag: "K" },
-            { text: "얼굴이나 비율이 좋아 보이는지", tag: "J" },
-            { text: "손이 예뻐 보이는 디자인인지", tag: "P" },
-            { text: "이걸 입으면 사람들이 나를 어떻게 볼지", tag: "C" },
-            { text: "그냥 입기 편한 걸 고른다", tag: "X" },
+            { text: "구매 후기 수와 재구매율", tag: "K" },
+            { text: "거울 속 얼굴선과 목이 어떻게 보이는지", tag: "J" },
+            { text: "소매 길이와 손이 나오는 모양", tag: "P" },
+            { text: "입고 나갔을 때 스쳐 지나가는 사람들의 시선", tag: "C" },
+            { text: "세탁이 쉬운지, 내 서랍 속 옷과 잘 맞는지", tag: "X" },
           ],
         },
         {
-          title: "평범한 일상 중 문득 떠오르는 생각은",
+          title: "평범한 일상 중 문득 머리를 스치는 생각은",
           options: [
-            { text: "그 나라 하늘이 여기보다 예뻤다는 생각", tag: "N" },
-            { text: "그때 먹었던 과일이 그립다는 생각", tag: "F" },
+            { text: "그날 올려다본 빛이 아직도 선명하다는 생각", tag: "N" },
             {
-              text: "그때 올린 게시물 반응이 어땠는지 다시 보고 싶다는 생각",
+              text: "그때 먹은 그 맛과 그 가격이 다시 올까 하는 생각",
+              tag: "F",
+            },
+            {
+              text: "내 게시물을 누가 저장했는지 확인하고 싶은 생각",
               tag: "I",
             },
-            { text: "별생각 없이 그냥 하루를 보낸다", tag: "X" },
+            { text: "냉장고에 반찬이 아직 남아 있었나 하는 생각", tag: "X" },
           ],
         },
         {
           title: "온라인 커뮤니티에 내 취향을 공유할 때, 나는",
           options: [
-            { text: "아무도 모를 것 같은 걸 올리는 게 재밌다", tag: "H" },
-            { text: "댓글로 다들 한 번 해보라고 권한다", tag: "G" },
-            { text: "평점이나 순위 정보를 같이 첨부한다", tag: "K" },
-            { text: "올리기 전 사진 속 내 얼굴부터 확인한다", tag: "J" },
-            { text: "그냥 일상 이야기를 편하게 올린다", tag: "X" },
+            { text: "조회수가 낮을수록 숨은 보물 같아서 더 즐겁다", tag: "H" },
+            { text: "댓글로 '일단 해보고 말해'라고 권한다", tag: "G" },
+            { text: "링크와 수치 근거를 달아야 안심이 된다", tag: "K" },
+            {
+              text: "올리기 전 첨부한 사진 속 내 윤곽을 다시 확인한다",
+              tag: "J",
+            },
+            { text: "글은 가끔 읽기만 하고 거의 올리지 않는다", tag: "X" },
           ],
         },
         {
           title: "많은 사람 앞에 설 일이 생기면, 나는",
           options: [
-            { text: "혹시 누가 알아볼까 신경이 쓰인다", tag: "C" },
-            { text: "평소 좋아하는 스타일을 더 신경 써서 챙긴다", tag: "D" },
-            { text: "그날따라 하늘이나 날씨까지 유난히 신경 쓰인다", tag: "N" },
-            { text: "평소랑 다름없이 행동한다", tag: "X" },
+            { text: "나를 아는 사람이 있을지 괜히 객석을 훑는다", tag: "C" },
+            { text: "그날의 룩을 내가 좋아하는 이미지에 맞춘다", tag: "D" },
+            {
+              text: "날씨와 하늘 분위기가 오늘 컨디션을 좌우한다고 느낀다",
+              tag: "N",
+            },
+            { text: "순서와 시간만 머릿속으로 정리해 둔다", tag: "X" },
           ],
         },
         {
-          title: "하루를 마무리하며 가장 많이 하는 생각은",
+          title: "하루를 마무리하며 가장 자주 떠오르는 건",
           options: [
-            { text: "오늘 올린 게시물 반응이 어땠을지", tag: "I" },
+            { text: "오늘 올린 것들이 어떤 반응을 받았을지", tag: "I" },
             {
-              text: "오늘 하루가 나한테 어떤 의미였는지 혼자 곱씹는다",
+              text: "오늘의 장면들을 하나의 서사로 이어 붙여보는 일",
               tag: "M",
             },
-            {
-              text: "오늘 발견한 것 중 아무도 모를 만한 게 있었는지",
-              tag: "H",
-            },
-            { text: "오늘 알게 된 걸 내일 누구한테 알려줄지", tag: "G" },
-            { text: "특별한 생각 없이 그냥 잠든다", tag: "X" },
+            { text: "오늘 발견한 것 중 나만 알고 싶은 게 있었는지", tag: "H" },
+            { text: "오늘 알게 된 걸 내일 누구에게 말해줄지", tag: "G" },
+            { text: "내일 아침 알람 시간을 다시 확인하는 일", tag: "X" },
           ],
         },
       ];
 
       /* =====================================================
-         상태
+     랜덤 유틸
+  ===================================================== */
 
-         answers[i] = 선택한 옵션의 index (아직 안 골랐으면 null)
-         뒤로가기를 눌러도 이전 선택은 유지됨
-      ===================================================== */
+      // Fisher–Yates 셔플 (원본은 건드리지 않고 복사본 반환)
+      function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
 
+      // 한 번의 테스트 동안 유지될 "덱"을 만든다.
+      // 문항 순서와 각 문항의 선택지 순서를 모두 섞되,
+      // '이전' 버튼으로 돌아와도 같은 순서가 보이도록 덱에 고정해둔다.
+      function buildDeck() {
+        return shuffle(QUESTIONS).map((q) => ({
+          title: q.title,
+          options: shuffle(q.options),
+        }));
+      }
+
+      /* =====================================================
+     상태
+
+     deck       = 이번 회차의 (섞인) 문항 배열
+     answers[i] = deck[i]에서 고른 선택지 index (안 골랐으면 null)
+  ===================================================== */
+
+      let deck = buildDeck();
       let current = 0;
-      let answers = new Array(QUESTIONS.length).fill(null);
+      let answers = new Array(deck.length).fill(null);
 
       const screens = {
         intro: document.getElementById("screen-intro"),
@@ -845,14 +910,20 @@
         screens[name].classList.add("is-active");
       }
 
+      function newRun() {
+        deck = buildDeck();
+        current = 0;
+        answers = new Array(deck.length).fill(null);
+      }
+
       function renderQuestion() {
-        const q = QUESTIONS[current];
+        const q = deck[current];
 
         document.getElementById("qIndex").textContent = current + 1;
-        document.getElementById("qTotal").textContent = QUESTIONS.length;
+        document.getElementById("qTotal").textContent = deck.length;
         document.getElementById("qTitle").textContent = q.title;
 
-        progressFill.style.width = `${(current / QUESTIONS.length) * 100}%`;
+        progressFill.style.width = `${(current / deck.length) * 100}%`;
 
         prevBtn.disabled = current === 0;
 
@@ -878,7 +949,7 @@
             btn.classList.add("is-picked");
 
             setTimeout(() => {
-              if (current < QUESTIONS.length - 1) {
+              if (current < deck.length - 1) {
                 current += 1;
                 renderQuestion();
               } else {
@@ -893,6 +964,7 @@
 
       function computeScores() {
         const scores = {};
+        const firstSeen = {}; // 동점일 때 먼저 선택된 쪽을 앞세우기 위한 기록
 
         Object.keys(SYNDROMES).forEach((key) => {
           scores[key] = 0;
@@ -901,21 +973,23 @@
         answers.forEach((optIndex, qIndex) => {
           if (optIndex === null) return;
 
-          const tag = QUESTIONS[qIndex].options[optIndex].tag;
+          const tag = deck[qIndex].options[optIndex].tag;
           scores[tag] += 1;
+          if (!(tag in firstSeen)) firstSeen[tag] = qIndex;
         });
 
-        return scores;
+        return { scores, firstSeen };
       }
 
       function showResult() {
         progressFill.style.width = "100%";
 
-        const scores = computeScores();
+        const { scores, firstSeen } = computeScores();
 
+        // 점수 내림차순, 동점이면 먼저 고른 쪽이 앞
         const ranked = Object.entries(scores)
           .filter(([, v]) => v > 0)
-          .sort((a, b) => b[1] - a[1]);
+          .sort((a, b) => b[1] - a[1] || firstSeen[a[0]] - firstSeen[b[0]]);
 
         const topKey = ranked.length ? ranked[0][0] : "M";
         const secondEntry = ranked.find(([key]) => key !== topKey);
@@ -948,15 +1022,13 @@
       }
 
       function restart() {
-        current = 0;
-        answers = new Array(QUESTIONS.length).fill(null);
+        newRun();
         progressFill.style.width = "0%";
         showScreen("intro");
       }
 
       document.getElementById("startBtn").addEventListener("click", () => {
-        current = 0;
-        answers = new Array(QUESTIONS.length).fill(null);
+        newRun(); // 시작할 때마다 새로 섞기
 
         showScreen("question");
         renderQuestion();
@@ -974,4 +1046,132 @@
       document.getElementById("retryBtn").addEventListener("click", restart);
     </script>
   </body>
+  <!-- 1. HTML 마크업 (보통 <body> 바로 아래에 배치) -->
+  <div class="cursor" aria-hidden="true">
+    <div class="cursor-inner">
+      <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+        <!-- 바깥 30% -->
+        <path
+          fill="#fff"
+          fill-opacity="0.3"
+          fill-rule="evenodd"
+          d="M50,4 L94,100 L50,74 L6,100 Z M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z"
+        />
+        <!-- 중간 60% -->
+        <path
+          fill="#fff"
+          fill-opacity="0.6"
+          fill-rule="evenodd"
+          d="M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z"
+        />
+        <!-- 중심 100% -->
+        <path fill="#fff" d="M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- 2. 스타일 시트 -->
+  <style>
+    .cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .cursor-ready .cursor {
+      opacity: 1;
+    }
+
+    .cursor-inner {
+      position: absolute;
+      left: -19px;
+      top: -3px;
+      width: 38px;
+      height: 42px;
+
+      /* ▼▼▼ [기본 기울기 코드] -30도로 설정 ▼▼▼ */
+      transform: rotate(-30deg);
+
+      transform-origin: 50% 8%;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.55))
+        drop-shadow(0 0 14px rgba(255, 255, 255, 0.3));
+      transition:
+        transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.3s ease;
+    }
+
+    .cursor-inner svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .cursor-hover .cursor-inner,
+    .cursor-scan .cursor-inner {
+      /* ▼▼▼ [호버 시 코드] -30도 유지 + 20% 작아짐(scale 0.8) ▼▼▼ */
+      transform: rotate(-30deg) scale(0.55);
+
+      filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.75))
+        drop-shadow(0 0 20px rgba(255, 255, 255, 0.45));
+    }
+
+    .cursor-down .cursor-inner {
+      /* ▼▼▼ [클릭 시 코드] -30도 유지 + 작아짐(scale 0.85) ▼▼▼ */
+      transform: rotate(-30deg) scale(0.85);
+    }
+
+    html.has-custom-cursor,
+    html.has-custom-cursor * {
+      cursor: none !important;
+    }
+  </style>
+
+  <!-- 3. 자바스크립트 -->
+  <script>
+    (function () {
+      const finePointer = window.matchMedia(
+        "(hover: hover) and (pointer: fine)",
+      ).matches;
+      if (!finePointer) return;
+
+      const root = document.documentElement;
+      const cursor = document.querySelector(".cursor");
+      root.classList.add("has-custom-cursor");
+
+      window.addEventListener("mousemove", (e) => {
+        cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        root.classList.add("cursor-ready");
+      });
+
+      document.addEventListener("mouseover", (e) => {
+        const t = e.target;
+        root.classList.remove("cursor-hover", "cursor-scan");
+        if (t.closest("[data-cursor='scan']")) {
+          root.classList.add("cursor-scan");
+        } else if (t.closest("a, button, [data-cursor]")) {
+          root.classList.add("cursor-hover");
+        }
+      });
+
+      window.addEventListener("mousedown", () =>
+        root.classList.add("cursor-down"),
+      );
+      window.addEventListener("mouseup", () =>
+        root.classList.remove("cursor-down"),
+      );
+      document.addEventListener("mouseleave", () =>
+        root.classList.remove("cursor-ready"),
+      );
+      document.addEventListener("mouseenter", () =>
+        root.classList.add("cursor-ready"),
+      );
+    })();
+  </script>
 </html>
