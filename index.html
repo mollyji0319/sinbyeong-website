@@ -17,7 +17,7 @@
         font-style: normal;
       }
 
-      /* 유휴 상태 안내 팝업 스타일 */
+      /* 유휴 상태 안내 팝업 스타일 (--s: 화면 배율) */
       #idle-guide-popup {
         position: fixed;
         top: 50%;
@@ -26,7 +26,7 @@
         background: rgba(10, 10, 15, 0.85);
         border: 1px solid rgba(255, 46, 122, 0.4);
         box-shadow: 0 0 30px rgba(255, 46, 122, 0.2);
-        padding: 24px 36px;
+        padding: calc(24px * var(--s, 1)) calc(36px * var(--s, 1));
         z-index: 9999;
         text-align: center;
         color: #ff008c;
@@ -49,14 +49,14 @@
       }
 
       #idle-guide-popup .guide-title {
-        font-size: 18px;
+        font-size: calc(18px * var(--s, 1));
         font-weight: 700;
         color: #ff008c;
         margin-bottom: 8px;
       }
 
       #idle-guide-popup .guide-desc {
-        font-size: 14px;
+        font-size: calc(14px * var(--s, 1));
         color: #ff008c;
         line-height: 1.5;
       }
@@ -67,11 +67,11 @@
         top: 0;
         left: 0;
         z-index: 10000;
-        padding: 8px 16px;
+        padding: calc(8px * var(--s, 1)) calc(16px * var(--s, 1));
         background: rgba(0, 0, 0, 0.418);
         color: #fff;
         font-family: "SEBANG Gothic Bold", "Chakra Petch", sans-serif;
-        font-size: 15px;
+        font-size: calc(15px * var(--s, 1));
         font-weight: 700;
         letter-spacing: 0.5px;
         white-space: nowrap;

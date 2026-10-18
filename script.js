@@ -1,3 +1,29 @@
+/* ==========================================
+   0. 반응형 무대 맞춤 (1536 x 960 기준)
+   - 화면 크기에 맞춰 배율(--s)과 무대 크기를 계산해 CSS 변수로 전달
+   - 어떤 해상도에서도 사진 2와 같은 구도로 보임
+   ========================================== */
+const DESIGN_W = 1536;
+const DESIGN_H = 960;
+let stageScale = 1;
+
+function fitStage() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  stageScale = Math.min(w / DESIGN_W, h / DESIGN_H);
+
+  const rootStyle = document.documentElement.style;
+  rootStyle.setProperty("--s", stageScale);
+  rootStyle.setProperty("--stage-w", w / stageScale + "px");
+  rootStyle.setProperty("--stage-h", h / stageScale + "px");
+}
+
+fitStage();
+window.addEventListener("resize", fitStage);
+
+/* ==========================================
+   별 캔버스
+   ========================================== */
 const canvas = document.getElementById("stars");
 const ctx = canvas.getContext("2d");
 
@@ -64,6 +90,9 @@ function animate() {
 init();
 animate();
 
+/* ==========================================
+   확대/축소 + 드래그 이동
+   ========================================== */
 const container = document.querySelector(".main-container");
 const video = document.getElementById("bg-video");
 const svg = document.querySelector(".overlay-svg");
@@ -75,9 +104,8 @@ let isPanning = false;
 let startX, startY;
 
 // 1. 마우스 휠로 확대/축소 (Zoom)
-// 확대/축소 설정값
 const MIN_SCALE = 1; // 최소 1배 (원래 크기보다 작아지지 않음)
-const MAX_SCALE = 3; // 최대 5배 (원하는 만큼 숫자를 키우세요)
+const MAX_SCALE = 3; // 최대 배율
 const ZOOM_SPEED = 0.1; // 한 번 휠 돌릴 때 커지는 정도
 
 window.addEventListener(
@@ -101,20 +129,21 @@ window.addEventListener(
 );
 
 // 2. 마우스 클릭 후 드래그로 이동 (Pan)
+// 무대가 확대/축소되어 있으므로 마우스 좌표를 stageScale로 나눠 무대 기준으로 환산
 window.addEventListener("mousedown", (e) => {
   if (scale > 1) {
     // 확대된 상태에서만 이동 가능
     isPanning = true;
-    startX = e.clientX - originX;
-    startY = e.clientY - originY;
+    startX = e.clientX / stageScale - originX;
+    startY = e.clientY / stageScale - originY;
     container.style.cursor = "grabbing";
   }
 });
 
 window.addEventListener("mousemove", (e) => {
   if (!isPanning) return;
-  originX = e.clientX - startX;
-  originY = e.clientY - startY;
+  originX = e.clientX / stageScale - startX;
+  originY = e.clientY / stageScale - startY;
   applyTransform();
 });
 
@@ -130,80 +159,10 @@ function applyTransform() {
   video.style.transform = transform;
   svg.style.transform = transform;
 }
-document.addEventListener("DOMContentLoaded", () => {
-  const roomPaths = document.querySelectorAll(".room-path");
-  const infoDesc = document.getElementById("info-box-desc");
 
-  roomPaths.forEach((path) => {
-    path.addEventListener("mouseenter", () => {
-      const infoText = path.getAttribute("data-info");
-      if (infoText && infoDesc) {
-        infoDesc.textContent = infoText;
-      }
-    });
-
-    path.addEventListener("mouseleave", () => {
-      if (infoDesc) {
-        infoDesc.textContent = defaultDesc;
-      }
-    });
-  });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const roomPaths = document.querySelectorAll(".room-path");
-  const infoTitle = document.getElementById("info-box-title");
-  const infoDesc = document.getElementById("info-box-desc");
-
-  roomPaths.forEach((path) => {
-    // 1. 방에 마우스를 올렸을 때
-    path.addEventListener("mouseenter", function () {
-      // 페이드 인 효과를 위해 body에 클래스 추가
-      document.body.classList.add("is-hovered");
-
-      // HTML에 작성된 각 방의 고유 타이틀과 설명 가져오기
-      const titleText = this.getAttribute("data-title");
-      const descText = this.getAttribute("data-desc");
-
-      // 패널에 텍스트 반영 (여기를 수정해 각 방의 더미글을 다르게 제어할 수 있습니다)
-      if (infoTitle && titleText) infoTitle.textContent = titleText;
-      if (infoDesc && descText) infoDesc.textContent = descText;
-    });
-
-    // 2. 방에서 마우스가 벗어났을 때
-    path.addEventListener("mouseleave", function () {
-      // 페이드 아웃 효과를 위해 body에서 클래스 제거
-      document.body.classList.remove("is-hovered");
-    });
-  });
-});
-document.addEventListener("DOMContentLoaded", () => {
-  const loader = document.getElementById("intro-loader");
-  const loaderBar = document.getElementById("loader-bar");
-  const loaderPercent = document.getElementById("loader-percent");
-
-  let progress = 0;
-
-  // 로딩 속도 조절 (숫자가 작을수록 빨리 차오름)
-  const loadingInterval = setInterval(() => {
-    // 랜덤한 증가 폭을 주어 진짜 시스템이 로딩되는 듯한 느낌 연출
-    progress += Math.floor(Math.random() * 15) + 5;
-
-    if (progress >= 100) {
-      progress = 100;
-      clearInterval(loadingInterval);
-
-      // 로딩 완료 후 0.3초 대기했다가 페이드아웃 클래스 부착
-      setTimeout(() => {
-        loader.classList.add("fade-out");
-      }, 300);
-    }
-
-    loaderBar.style.width = progress + "%";
-    loaderPercent.textContent = progress + "%";
-  }, 80);
-});
-
+/* ==========================================
+   인트로 로딩 + 방 호버 시 우측 하단 패널 연동
+   ========================================== */
 document.addEventListener("DOMContentLoaded", () => {
   // 1. 인트로 로딩 시뮬레이션
   const loader = document.getElementById("intro-loader");
@@ -281,7 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const dValue = path.getAttribute("data-d");
       const itemsJson = path.getAttribute("data-items");
 
-      // 패널 텍스트 채우기 (안내 문구 영역은 절대 건드리거나 채우지 않음)
+      // 패널 텍스트 채우기
       infoNo.textContent = no;
       infoTitle.textContent = title;
       infoDesc.textContent = desc;
@@ -331,45 +290,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 마우스가 방을 벗어났을 때 5초 동안 정보와 프레임을 유지 후 숨기기
+  // 마우스가 방을 벗어났을 때 3초 동안 정보와 프레임을 유지 후 숨기기
   const svgOverlay = document.querySelector(".overlay-svg");
   if (svgOverlay) {
     svgOverlay.addEventListener("mouseleave", () => {
       if (hideTimeout) clearTimeout(hideTimeout);
 
-      // 5초(5000밀리초) 후에 패널을 숨김 처리
       hideTimeout = setTimeout(() => {
         body.classList.remove("is-hovered");
       }, 3000);
     });
   }
 });
-window.onwheel = (e) => {
-  target += e.deltaY > 0 ? 1 : -1;
-};
-render();
-
-// 유휴 상태 안내 오버레이
-(function () {
-  const idleOverlay = document.getElementById("idle-overlay");
-  const IDLE_DELAY = 5000; // 5초
-  let idleTimer = null;
-
-  function showIdle() {
-    idleOverlay.classList.add("active");
-  }
-  function hideIdle() {
-    idleOverlay.classList.remove("active");
-  }
-  function resetIdleTimer() {
-    hideIdle();
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(showIdle, IDLE_DELAY);
-  }
-
-  window.addEventListener("mousemove", resetIdleTimer);
-  window.addEventListener("mousedown", resetIdleTimer);
-  window.addEventListener("keydown", resetIdleTimer);
-
-  resetIdleTimer();
-})();

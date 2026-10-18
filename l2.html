@@ -4,6 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Patho Lab - Diagnosing The Next Big Trend</title>
+
+    <!-- 반응형 배율 계산 (1536 x 960 기준) : 렌더링 전에 먼저 실행 -->
+    <script>
+      (function () {
+        var DESIGN_W = 1536;
+        var DESIGN_H = 960;
+        function fit() {
+          var w = window.innerWidth;
+          var h = window.innerHeight;
+          var s = 1;
+          if (w >= 900) {
+            s = Math.min(w / DESIGN_W, h / DESIGN_H);
+            s = Math.max(0.6, s);
+          }
+          document.documentElement.style.setProperty("--s", s);
+        }
+        fit();
+        window.addEventListener("resize", fit);
+      })();
+    </script>
+
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap");
 
@@ -27,6 +48,19 @@
         font-weight: normal;
         font-style: normal;
         font-display: swap;
+      }
+
+      /* =========================================================
+         반응형 기준값
+         --s : 화면 배율 (JS가 갱신), --u : 배율이 적용된 1px
+      ========================================================= */
+      :root {
+        --s: 1;
+        --u: calc(1px * var(--s));
+      }
+
+      html {
+        font-size: calc(16px * var(--s));
       }
 
       /* 스크롤바: 반투명 핑크 */
@@ -152,7 +186,7 @@
             rgba(230, 0, 115, 0.15) 1px,
             transparent 1px
           );
-        background-size: 80px 80px;
+        background-size: calc(80 * var(--u)) calc(80 * var(--u));
         z-index: -1;
         pointer-events: none;
       }
@@ -192,7 +226,7 @@
 
       .reveal > * {
         opacity: 0;
-        transform: translateY(14px);
+        transform: translateY(calc(14 * var(--u)));
       }
 
       .reveal.is-revealed::after {
@@ -250,12 +284,12 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 40px 20px;
+        padding: calc(40 * var(--u)) calc(20 * var(--u));
       }
 
       .section-inner {
         width: 100%;
-        max-width: 1200px;
+        max-width: calc(1200 * var(--u));
         position: relative;
         z-index: 2;
       }
@@ -265,7 +299,7 @@
       ========================================================= */
       .intro-section {
         --hero-end: polygon(0 0, 100% 0, 75% 100%, 0% 100%);
-        padding: 0 20px;
+        padding: 0 calc(20 * var(--u));
         overflow: hidden;
         align-items: stretch;
       }
@@ -309,7 +343,7 @@
       @keyframes dnaIn {
         from {
           opacity: 0;
-          transform: translateX(40px);
+          transform: translateX(calc(40 * var(--u)));
         }
         to {
           opacity: 1;
@@ -341,7 +375,7 @@
         position: relative;
         z-index: 5;
         width: 100%;
-        max-width: 1200px;
+        max-width: 78.125vw; /* 1536px 기준 1200px = 78.125vw → 핑크 배경과 같이 가로폭에 비례 */
         margin: 0 auto;
         flex: 1;
         display: flex;
@@ -351,15 +385,15 @@
       }
 
       .intro-content {
-        max-width: 860px;
+        max-width: calc(860 * var(--u));
       }
 
       /* 로고: 맨 위 왼쪽에 고정 */
       .logo-img {
         position: absolute;
-        top: clamp(20px, 4.5vh, 44px);
+        top: clamp(calc(20 * var(--u)), 4.5vh, calc(44 * var(--u)));
         left: 0;
-        width: clamp(110px, 12vw, 150px);
+        width: clamp(calc(110 * var(--u)), 12vw, calc(150 * var(--u)));
         margin-bottom: 0;
         display: inline-block;
       }
@@ -370,7 +404,14 @@
         width: 100%;
       }
 
-      .logo-img img,
+      .logo-img img {
+        width: 115%;
+        height: auto;
+        display: block;
+        filter: brightness(0) invert(1);
+      }
+
+      /* 푸터 로고: 부모 안에 꽉 차게 (reveal의 overflow:hidden 때문에 넘치면 잘림) */
       .footer-logo img {
         width: 100%;
         height: auto;
@@ -380,9 +421,9 @@
 
       /* 메인 글자: 더 크게 */
       .hero-title-img {
-        width: min(100%, 820px, 72vh);
-        margin-bottom: clamp(16px, 3.5vh, 35px);
-        margin-left: clamp(-75px, -4.5vw, -35px);
+        width: min(100%, calc(820 * var(--u)), 72vh);
+        margin-bottom: clamp(calc(16 * var(--u)), 3.5vh, calc(35 * var(--u)));
+        margin-left: clamp(calc(-75 * var(--u)), -4.5vw, calc(-35 * var(--u)));
       }
 
       .hero-title-img img {
@@ -398,13 +439,13 @@
         color: #ffffff;
         font-weight: 700;
         font-size: clamp(1.05rem, 2.6vh, 1.6rem);
-        padding: 6px 00px;
-        margin-bottom: clamp(12px, 2vh, 20px);
-        letter-spacing: -0.5px;
+        padding: calc(6 * var(--u)) 0;
+        margin-bottom: clamp(calc(12 * var(--u)), 2vh, calc(20 * var(--u)));
+        letter-spacing: calc(-0.5 * var(--u));
       }
 
       .description {
-        max-width: 640px;
+        max-width: calc(640 * var(--u));
         font-size: clamp(0.8rem, 1.5vh, 0.95rem);
         line-height: 1.6;
         color: rgba(255, 255, 255, 0.9);
@@ -427,12 +468,12 @@
       }
 
       .description p + p {
-        margin-top: 15px;
+        margin-top: calc(15 * var(--u));
       }
 
       .hero-rise {
         opacity: 0;
-        transform: translateY(14px);
+        transform: translateY(calc(14 * var(--u)));
         animation: contentRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         animation-delay: var(--d, 0s);
       }
@@ -448,7 +489,7 @@
       /* 공통 타이틀 배지 */
       .center-badge-wrapper {
         text-align: center;
-        margin-bottom: clamp(24px, 5vh, 40px);
+        margin-bottom: clamp(calc(24 * var(--u)), 5vh, calc(40 * var(--u)));
         display: flex;
         justify-content: center;
       }
@@ -459,8 +500,8 @@
         color: #ffffff;
         font-weight: 700;
         font-size: 1.05rem;
-        padding: 8px 30px;
-        letter-spacing: 0.5px;
+        padding: calc(8 * var(--u)) calc(30 * var(--u));
+        letter-spacing: calc(0.5 * var(--u));
       }
 
       /* =========================================================
@@ -518,8 +559,8 @@
       /* 타이틀 + 부제 */
       .archive-head {
         position: absolute;
-        top: max(5vh, 28px);
-        left: max(3vw, 24px);
+        top: max(5vh, calc(28 * var(--u)));
+        left: max(3vw, calc(24 * var(--u)));
         z-index: 3;
         pointer-events: none;
       }
@@ -537,12 +578,12 @@
       }
 
       .archive-sub {
-        margin-top: 16px;
+        margin-top: calc(16 * var(--u));
         font-size: clamp(1.4rem, 3.4vh, 2.2rem);
         font-weight: 900;
         line-height: 1.2;
         color: #ffffff;
-        letter-spacing: -0.5px;
+        letter-spacing: calc(-0.5 * var(--u));
       }
 
       .archive-items {
@@ -647,10 +688,10 @@
 
       .archive-progress {
         position: absolute;
-        left: max(3vw, 24px);
-        right: max(3vw, 24px);
+        left: max(3vw, calc(24 * var(--u)));
+        right: max(3vw, calc(24 * var(--u)));
         bottom: 3vh;
-        height: 2px;
+        height: calc(2 * var(--u));
         background: rgba(255, 255, 255, 0.18);
         z-index: 5;
         pointer-events: none;
@@ -666,12 +707,12 @@
 
       .archive-hint {
         position: absolute;
-        right: max(3vw, 24px);
-        bottom: calc(3vh + 12px);
+        right: max(3vw, calc(24 * var(--u)));
+        bottom: calc(3vh + 12 * var(--u));
         z-index: 5;
         font-size: 0.7rem;
         font-weight: 700;
-        letter-spacing: 3px;
+        letter-spacing: calc(3 * var(--u));
         color: rgba(255, 255, 255, 0.65);
         pointer-events: none;
       }
@@ -687,7 +728,7 @@
           transform: translateX(0);
         }
         50% {
-          transform: translateX(6px);
+          transform: translateX(calc(6 * var(--u)));
         }
       }
 
@@ -697,24 +738,25 @@
       .philosophy-list {
         display: flex;
         flex-direction: column;
-        gap: clamp(12px, 2.5vh, 20px);
-        max-width: 1050px;
+        gap: clamp(calc(12 * var(--u)), 2.5vh, calc(20 * var(--u)));
+        max-width: calc(1050 * var(--u));
         margin: 0 auto;
       }
 
       .phil-item {
         position: relative;
         background: #ff008c;
-        padding: 3px;
+        padding: calc(3 * var(--u));
         clip-path: polygon(0 0, 96% 0, 100% 50%, 96% 100%, 0 100%);
       }
 
       .phil-item-inner {
         background-color: #1a0011;
-        padding: clamp(16px, 3vh, 24px) 40px;
+        padding: clamp(calc(16 * var(--u)), 3vh, calc(24 * var(--u)))
+          calc(40 * var(--u));
         display: flex;
         align-items: center;
-        gap: 40px;
+        gap: calc(40 * var(--u));
         clip-path: polygon(0 0, 96% 0, 100% 50%, 96% 100%, 0 100%);
       }
 
@@ -727,13 +769,13 @@
         font-weight: 900;
         color: #ff008c;
         font-style: italic;
-        min-width: 50px;
+        min-width: calc(50 * var(--u));
       }
 
       .phil-text h3 {
         font-size: 1.15rem;
         font-weight: 700;
-        margin-bottom: 6px;
+        margin-bottom: calc(6 * var(--u));
         color: #ffffff;
       }
 
@@ -745,8 +787,9 @@
 
       @media (max-width: 700px) {
         .phil-item-inner {
-          padding: 18px 28px 18px 20px;
-          gap: 16px;
+          padding: calc(18 * var(--u)) calc(28 * var(--u)) calc(18 * var(--u))
+            calc(20 * var(--u));
+          gap: calc(16 * var(--u));
         }
       }
 
@@ -770,14 +813,14 @@
         flex-direction: column;
         justify-content: center;
         background-color: #ff008c;
-        padding: 50px 40px;
+        padding: calc(50 * var(--u)) calc(40 * var(--u));
         text-align: center;
         color: #12000c;
       }
 
       .warning-icon {
-        width: clamp(110px, 17vh, 190px);
-        margin: 0 auto 28px;
+        width: clamp(calc(110 * var(--u)), 17vh, calc(190 * var(--u)));
+        margin: 0 auto calc(28 * var(--u));
       }
 
       .warning-icon svg {
@@ -790,8 +833,8 @@
         font-size: 1.15rem;
         font-weight: 900;
         color: #ffffff;
-        margin-bottom: 30px;
-        letter-spacing: 0.5px;
+        margin-bottom: calc(30 * var(--u));
+        letter-spacing: calc(0.5 * var(--u));
         text-align: center;
       }
 
@@ -803,11 +846,11 @@
 
       .notice-rules {
         list-style: none;
-        max-width: 800px;
-        margin: 0 auto 60px auto;
+        max-width: calc(800 * var(--u));
+        margin: 0 auto calc(60 * var(--u)) auto;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: calc(12 * var(--u));
         text-align: center;
         padding-left: 0;
       }
@@ -823,11 +866,11 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 18px;
+        gap: calc(18 * var(--u));
       }
 
       .footer-logo {
-        width: 140px;
+        width: calc(140 * var(--u));
         margin: 0 auto;
       }
 
@@ -853,23 +896,24 @@
         color: #ffffff;
         font-size: 0.85rem;
         font-weight: 700;
-        letter-spacing: -0.2px;
+        letter-spacing: calc(-0.2 * var(--u));
         line-height: 1.4;
-        padding: 10px 18px;
-        border-radius: 4px;
-        box-shadow: 0 6px 18px rgba(18, 0, 12, 0.35);
+        padding: calc(10 * var(--u)) calc(18 * var(--u));
+        border-radius: calc(4 * var(--u));
+        box-shadow: 0 calc(6 * var(--u)) calc(18 * var(--u))
+          rgba(18, 0, 12, 0.35);
         animation: hintBob 2s ease-in-out infinite;
       }
 
       .hint-bubble::before {
         content: "";
         position: absolute;
-        top: -7px;
+        top: calc(-7 * var(--u));
         left: 50%;
-        margin-left: -7px;
-        border-left: 7px solid transparent;
-        border-right: 7px solid transparent;
-        border-bottom: 7px solid #12000c;
+        margin-left: calc(-7 * var(--u));
+        border-left: calc(7 * var(--u)) solid transparent;
+        border-right: calc(7 * var(--u)) solid transparent;
+        border-bottom: calc(7 * var(--u)) solid #12000c;
       }
 
       @keyframes hintBob {
@@ -878,7 +922,7 @@
           transform: translateY(0);
         }
         50% {
-          transform: translateY(-6px);
+          transform: translateY(calc(-6 * var(--u)));
         }
       }
 
@@ -909,10 +953,10 @@
 
       .cursor-inner {
         position: absolute;
-        left: -19px;
-        top: -3px;
-        width: 38px;
-        height: 42px;
+        left: calc(-19 * var(--u));
+        top: calc(-3 * var(--u));
+        width: calc(38 * var(--u));
+        height: calc(42 * var(--u));
         transform: rotate(-30deg);
         transform-origin: 50% 8%;
         filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.55))

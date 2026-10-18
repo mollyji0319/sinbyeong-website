@@ -4,6 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>신병 연구소 - 카페테리아</title>
+
+    <!-- 반응형 배율 계산 (1536 x 960 기준) : 렌더링 전에 먼저 실행 -->
+    <script>
+      (function () {
+        var DESIGN_W = 1536;
+        var DESIGN_H = 960;
+        window.__stageScale = 1;
+        function fit() {
+          var w = window.innerWidth;
+          var h = window.innerHeight;
+          var s = 1;
+          if (w >= 900) {
+            s = Math.min(w / DESIGN_W, h / DESIGN_H);
+            s = Math.max(0.6, s);
+          }
+          window.__stageScale = s;
+          document.documentElement.style.setProperty("--s", s);
+          // React 쪽에 배율 변경 알림
+          window.dispatchEvent(new Event("stage-scale"));
+        }
+        fit();
+        window.addEventListener("resize", fit);
+      })();
+    </script>
+
     <script
       crossorigin
       src="https://unpkg.com/react@18/umd/react.development.js"
@@ -24,24 +49,35 @@
         font-style: normal;
       }
 
+      /* --s : 화면 배율 (JS가 갱신), --u : 배율이 적용된 1px */
       :root {
         --accent: #ff008c;
+        --s: 1;
+        --u: calc(1px * var(--s));
       }
 
       html,
       body {
         margin: 0;
         padding: 0;
+        width: 100%;
+        height: 100%;
         background-color: #000000;
         color: #ff008c;
         font-family: "SEBANG Gothic", "Noto Sans KR", sans-serif;
         font-weight: 400;
         overflow: hidden;
+        overscroll-behavior: none;
 
         background-image:
           linear-gradient(rgba(255, 133, 218, 0.12) 1px, transparent 1px),
           linear-gradient(90deg, rgba(255, 133, 218, 0.12) 1px, transparent 1px);
-        background-size: 50px 50px;
+        background-size: calc(50 * var(--u)) calc(50 * var(--u));
+      }
+
+      body {
+        position: fixed;
+        inset: 0;
       }
 
       * {
@@ -66,16 +102,16 @@
             rgba(255, 61, 129, 0.07) 1px,
             transparent 1px
           );
-        background-size: 50px 50px;
+        background-size: calc(50 * var(--u)) calc(50 * var(--u));
         z-index: -1;
         pointer-events: none;
       }
 
       #left-branding {
         position: absolute;
-        top: 30px;
-        left: 90px;
-        width: 650px;
+        top: calc(30 * var(--u));
+        left: calc(90 * var(--u));
+        width: calc(650 * var(--u));
         z-index: 2000;
         pointer-events: none;
       }
@@ -83,8 +119,8 @@
       .logo-link {
         display: inline-block;
         pointer-events: auto;
-        width: 130px;
-        margin-bottom: 10px;
+        width: calc(130 * var(--u));
+        margin-bottom: calc(10 * var(--u));
         background: none;
         border: none;
         padding: 0;
@@ -109,7 +145,7 @@
         scrollbar-color: lch(58.21% 75.61 6.25 / 0.478) #0d0d0d;
       }
       .custom-scroll::-webkit-scrollbar {
-        width: 8px;
+        width: calc(8 * var(--u));
       }
       .custom-scroll::-webkit-scrollbar-track {
         background: transparent;
@@ -117,7 +153,7 @@
       .custom-scroll::-webkit-scrollbar-thumb {
         background-color: lch(58.21% 75.61 6.25 / 0.478);
         border-radius: 999px;
-        border: 2px solid transparent;
+        border: calc(2 * var(--u)) solid transparent;
         background-clip: content-box;
       }
       .custom-scroll::-webkit-scrollbar-thumb:hover {
@@ -152,8 +188,100 @@
 
     <div id="root"></div>
 
+    <!-- 커스텀 마우스 커서 -->
+    <div class="cursor" aria-hidden="true">
+      <div class="cursor-inner">
+        <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+          <path
+            fill="#fff"
+            fill-opacity="0.3"
+            fill-rule="evenodd"
+            d="M50,4 L94,100 L50,74 L6,100 Z M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z"
+          />
+          <path
+            fill="#fff"
+            fill-opacity="0.6"
+            fill-rule="evenodd"
+            d="M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z"
+          />
+          <path fill="#fff" d="M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z" />
+        </svg>
+      </div>
+    </div>
+
+    <style>
+      .cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .cursor-ready .cursor {
+        opacity: 1;
+      }
+
+      .cursor-inner {
+        position: absolute;
+        left: calc(-19 * var(--u));
+        top: calc(-3 * var(--u));
+        width: calc(38 * var(--u));
+        height: calc(42 * var(--u));
+        transform: rotate(-30deg);
+        transform-origin: 50% 8%;
+        filter: drop-shadow(0 0 calc(5 * var(--u)) rgba(255, 255, 255, 0.55))
+          drop-shadow(0 0 calc(14 * var(--u)) rgba(255, 255, 255, 0.3));
+        transition:
+          transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.3s ease;
+      }
+
+      .cursor-inner svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      .cursor-hover .cursor-inner,
+      .cursor-scan .cursor-inner {
+        transform: rotate(-30deg) scale(0.55);
+        filter: drop-shadow(0 0 calc(7 * var(--u)) rgba(255, 255, 255, 0.75))
+          drop-shadow(0 0 calc(20 * var(--u)) rgba(255, 255, 255, 0.45));
+      }
+
+      .cursor-down .cursor-inner {
+        transform: rotate(-30deg) scale(0.85);
+      }
+
+      html.has-custom-cursor,
+      html.has-custom-cursor * {
+        cursor: none !important;
+      }
+    </style>
+
     <script type="text/babel">
       const { useState, useEffect } = React;
+
+      /* 배율이 적용된 px 문자열을 돌려주는 헬퍼 (예: u(14) → "14px" * 배율) */
+      function u(n) {
+        return n * (window.__stageScale || 1) + "px";
+      }
+
+      /* 화면 배율이 바뀔 때 컴포넌트를 다시 그리게 하는 훅 */
+      function useStageScale() {
+        const [, setTick] = useState(0);
+        useEffect(() => {
+          const h = () => setTick((t) => t + 1);
+          window.addEventListener("stage-scale", h);
+          return () => window.removeEventListener("stage-scale", h);
+        }, []);
+      }
 
       const colors = {
         bg: "#0a0a0a",
@@ -226,16 +354,16 @@
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 6,
+              gap: u(6),
               marginLeft: "auto",
               background: "transparent",
               border: `1px solid ${colors.line}`,
               borderRadius: 999,
-              padding: "4px 11px",
+              padding: `${u(4)} ${u(11)}`,
               cursor: "pointer",
               color: colors.pinkSoft,
               fontFamily: fontMono,
-              fontSize: 12.5,
+              fontSize: u(12.5),
               transition: "border-color 0.15s ease, color 0.15s ease",
             }}
             onMouseEnter={(e) => {
@@ -247,7 +375,7 @@
               e.currentTarget.style.color = colors.pinkSoft;
             }}
           >
-            <span className={pop ? "like-pop" : ""} style={{ fontSize: 13 }}>
+            <span className={pop ? "like-pop" : ""} style={{ fontSize: u(13) }}>
               ♥
             </span>
             <span>{count}</span>
@@ -269,14 +397,14 @@
           >
             <div
               style={{
-                padding: "28px 30px 18px",
+                padding: `${u(28)} ${u(30)} ${u(18)}`,
                 borderBottom: `1px solid ${colors.line}`,
               }}
             >
               <h2
                 style={{
                   fontFamily: fontSebang,
-                  fontSize: 26,
+                  fontSize: u(26),
                   fontWeight: 700,
                   color: colors.text,
                   margin: 0,
@@ -291,10 +419,10 @@
               style={{
                 flex: 1,
                 overflowY: "auto",
-                padding: "18px 30px 30px",
+                padding: `${u(18)} ${u(30)} ${u(30)}`,
                 display: "flex",
                 flexDirection: "column",
-                gap: 14,
+                gap: u(14),
               }}
             >
               {gossips.length === 0 ? (
@@ -310,27 +438,27 @@
                       background: colors.panelAlt,
                       border: `1px solid ${colors.line}`,
                       borderRadius: 4,
-                      borderLeft: `3px solid ${colors.pink}`,
-                      padding: "16px 18px",
+                      borderLeft: `${u(3)} solid ${colors.pink}`,
+                      padding: `${u(16)} ${u(18)}`,
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 10,
-                        marginBottom: 8,
+                        gap: u(10),
+                        marginBottom: u(8),
                       }}
                     >
                       <span
                         style={{
                           fontFamily: fontSebang,
-                          fontSize: 13,
+                          fontSize: u(13),
                           fontWeight: 400,
                           color: colors.bg,
                           background: colors.pink,
                           borderRadius: 3,
-                          padding: "2px 9px",
+                          padding: `${u(2)} ${u(9)}`,
                         }}
                       >
                         {g.type}
@@ -338,7 +466,7 @@
                       <span
                         style={{
                           fontFamily: fontSebang,
-                          fontSize: 13,
+                          fontSize: u(13),
                           fontWeight: 400,
                           color: colors.textMuted,
                         }}
@@ -354,7 +482,7 @@
                       style={{
                         margin: 0,
                         fontFamily: fontNoto,
-                        fontSize: 14.5,
+                        fontSize: u(14.5),
                         lineHeight: 1.6,
                         color: colors.text,
                       }}
@@ -404,9 +532,9 @@
           background: colors.bg,
           border: `1px solid ${colors.line}`,
           borderRadius: 4,
-          padding: "11px 13px",
+          padding: `${u(11)} ${u(13)}`,
           fontFamily: fontNoto,
-          fontSize: 14,
+          fontSize: u(14),
           color: colors.text,
           outline: "none",
         };
@@ -414,11 +542,11 @@
         const labelStyle = {
           display: "block",
           fontFamily: fontSebang,
-          fontSize: 12,
+          fontSize: u(12),
           fontWeight: 400,
           color: colors.textMuted,
-          letterSpacing: 0.5,
-          marginBottom: 6,
+          letterSpacing: u(0.5),
+          marginBottom: u(6),
         };
 
         return (
@@ -433,14 +561,14 @@
           >
             <div
               style={{
-                padding: "28px 30px 18px",
+                padding: `${u(28)} ${u(30)} ${u(18)}`,
                 borderBottom: `1px solid ${colors.line}`,
               }}
             >
               <h2
                 style={{
                   fontFamily: fontSebang,
-                  fontSize: 26,
+                  fontSize: u(26),
                   fontWeight: 700,
                   color: colors.text,
                   margin: 0,
@@ -456,10 +584,10 @@
               style={{
                 flex: 1,
                 overflowY: "auto",
-                padding: "24px 30px 30px",
+                padding: `${u(24)} ${u(30)} ${u(30)}`,
                 display: "flex",
                 flexDirection: "column",
-                gap: 18,
+                gap: u(18),
               }}
             >
               <div>
@@ -494,7 +622,7 @@
                   style={{
                     ...inputStyle,
                     flex: 1,
-                    minHeight: 140,
+                    minHeight: u(140),
                     resize: "none" /* 오른쪽 아래 핸들 제거 */,
                     lineHeight: 1.6,
                     fontFamily: fontNoto,
@@ -510,12 +638,12 @@
                 type="submit"
                 disabled={!isValid}
                 style={{
-                  marginTop: 4,
-                  padding: "13px 0",
+                  marginTop: u(4),
+                  padding: `${u(13)} 0`,
                   border: "none",
                   borderRadius: 4,
                   fontFamily: fontSebang,
-                  fontSize: 15,
+                  fontSize: u(15),
                   fontWeight: 700,
                   cursor: isValid ? "pointer" : "not-allowed",
                   background: isValid ? colors.pink : colors.pinkDim,
@@ -556,6 +684,8 @@
       }
 
       function CafeteriaPage() {
+        useStageScale(); // 화면 배율이 바뀌면 다시 그림
+
         const [gossips, setGossips] = useState(loadGossips);
 
         useEffect(() => {
@@ -565,8 +695,6 @@
             console.error("데이터 저장 실패", e);
           }
         }, [gossips]);
-
-        // 이하 handleAddGossip, handleLike, return(...) 는 기존 그대로
 
         function handleAddGossip(entry) {
           setGossips((prev) => [entry, ...prev]);
@@ -586,10 +714,10 @@
               height: "100vh",
               width: "100%",
               display: "flex",
-              padding: "75px 90px 60px 90px",
+              padding: `${u(75)} ${u(90)} ${u(60)} ${u(90)}`,
               background: "transparent",
               fontFamily: fontSebang,
-              gap: "24px",
+              gap: u(24),
             }}
           >
             <div
@@ -612,122 +740,46 @@
       const root = ReactDOM.createRoot(document.getElementById("root"));
       root.render(<CafeteriaPage />);
     </script>
+
+    <script>
+      (function () {
+        const finePointer = window.matchMedia(
+          "(hover: hover) and (pointer: fine)",
+        ).matches;
+        if (!finePointer) return;
+
+        const root = document.documentElement;
+        const cursor = document.querySelector(".cursor");
+        root.classList.add("has-custom-cursor");
+
+        window.addEventListener("mousemove", (e) => {
+          cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+          root.classList.add("cursor-ready");
+        });
+
+        document.addEventListener("mouseover", (e) => {
+          const t = e.target;
+          root.classList.remove("cursor-hover", "cursor-scan");
+          if (t.closest("[data-cursor='scan']")) {
+            root.classList.add("cursor-scan");
+          } else if (t.closest("a, button, [data-cursor]")) {
+            root.classList.add("cursor-hover");
+          }
+        });
+
+        window.addEventListener("mousedown", () =>
+          root.classList.add("cursor-down"),
+        );
+        window.addEventListener("mouseup", () =>
+          root.classList.remove("cursor-down"),
+        );
+        document.addEventListener("mouseleave", () =>
+          root.classList.remove("cursor-ready"),
+        );
+        document.addEventListener("mouseenter", () =>
+          root.classList.add("cursor-ready"),
+        );
+      })();
+    </script>
   </body>
-
-  <div class="cursor" aria-hidden="true">
-    <div class="cursor-inner">
-      <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
-        <path
-          fill="#fff"
-          fill-opacity="0.3"
-          fill-rule="evenodd"
-          d="M50,4 L94,100 L50,74 L6,100 Z M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z"
-        />
-        <path
-          fill="#fff"
-          fill-opacity="0.6"
-          fill-rule="evenodd"
-          d="M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z"
-        />
-        <path fill="#fff" d="M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z" />
-      </svg>
-    </div>
-  </div>
-
-  <style>
-    .cursor {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 0;
-      z-index: 9999;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .cursor-ready .cursor {
-      opacity: 1;
-    }
-
-    .cursor-inner {
-      position: absolute;
-      left: -19px;
-      top: -3px;
-      width: 38px;
-      height: 42px;
-      transform: rotate(-30deg);
-      transform-origin: 50% 8%;
-      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.55))
-        drop-shadow(0 0 14px rgba(255, 255, 255, 0.3));
-      transition:
-        transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-        filter 0.3s ease;
-    }
-
-    .cursor-inner svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-    }
-
-    .cursor-hover .cursor-inner,
-    .cursor-scan .cursor-inner {
-      transform: rotate(-30deg) scale(0.55);
-      filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.75))
-        drop-shadow(0 0 20px rgba(255, 255, 255, 0.45));
-    }
-
-    .cursor-down .cursor-inner {
-      transform: rotate(-30deg) scale(0.85);
-    }
-
-    html.has-custom-cursor,
-    html.has-custom-cursor * {
-      cursor: none !important;
-    }
-  </style>
-
-  <script>
-    (function () {
-      const finePointer = window.matchMedia(
-        "(hover: hover) and (pointer: fine)",
-      ).matches;
-      if (!finePointer) return;
-
-      const root = document.documentElement;
-      const cursor = document.querySelector(".cursor");
-      root.classList.add("has-custom-cursor");
-
-      window.addEventListener("mousemove", (e) => {
-        cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-        root.classList.add("cursor-ready");
-      });
-
-      document.addEventListener("mouseover", (e) => {
-        const t = e.target;
-        root.classList.remove("cursor-hover", "cursor-scan");
-        if (t.closest("[data-cursor='scan']")) {
-          root.classList.add("cursor-scan");
-        } else if (t.closest("a, button, [data-cursor]")) {
-          root.classList.add("cursor-hover");
-        }
-      });
-
-      window.addEventListener("mousedown", () =>
-        root.classList.add("cursor-down"),
-      );
-      window.addEventListener("mouseup", () =>
-        root.classList.remove("cursor-down"),
-      );
-      document.addEventListener("mouseleave", () =>
-        root.classList.remove("cursor-ready"),
-      );
-      document.addEventListener("mouseenter", () =>
-        root.classList.add("cursor-ready"),
-      );
-    })();
-  </script>
 </html>

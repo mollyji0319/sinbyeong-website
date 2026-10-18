@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>나의 병 진단 테스트</title>
 
+    <!-- 반응형 배율 계산 (1536 x 960 기준) : 렌더링 전에 먼저 실행 -->
+    <script>
+      (function () {
+        var DESIGN_W = 1536;
+        var DESIGN_H = 960;
+        function fit() {
+          var w = window.innerWidth;
+          var h = window.innerHeight;
+          var s = 1;
+          if (w >= 900) {
+            s = Math.min(w / DESIGN_W, h / DESIGN_H);
+            s = Math.max(0.6, s);
+          }
+          document.documentElement.style.setProperty("--s", s);
+        }
+        fit();
+        window.addEventListener("resize", fit);
+      })();
+    </script>
+
     <link
       rel="stylesheet"
       as="style"
@@ -45,7 +65,10 @@
         font-weight: 700 !important;
       }
 
+      /* --s : 화면 배율 (JS가 갱신), --u : 배율이 적용된 1px */
       :root {
+        --s: 1;
+        --u: calc(1px * var(--s));
         --ink: #08070a;
         --pink: #ff008c;
         --pink-dim: #b5124f;
@@ -57,20 +80,24 @@
       html,
       body {
         height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
       }
 
       body {
+        position: fixed;
+        inset: 0;
+        width: 100%;
         background: var(--ink);
         color: var(--paper);
 
         font-family: "Pretendard Variable", Pretendard, Arial, sans-serif;
 
-        overflow: hidden;
         background-color: #000000;
         background-image:
           linear-gradient(rgba(255, 133, 218, 0.12) 1px, transparent 1px),
           linear-gradient(90deg, rgba(255, 133, 218, 0.12) 1px, transparent 1px);
-        background-size: 50px 50px;
+        background-size: calc(50 * var(--u)) calc(50 * var(--u));
       }
 
       /* =========================================================
@@ -79,9 +106,9 @@
 
       #left-branding {
         position: absolute;
-        top: 30px;
-        left: 90px;
-        width: 650px;
+        top: calc(30 * var(--u));
+        left: calc(90 * var(--u));
+        width: calc(650 * var(--u));
         z-index: 2000;
         pointer-events: none;
       }
@@ -89,8 +116,8 @@
       .logo-link {
         display: inline-block;
         pointer-events: auto;
-        width: 130px;
-        margin-bottom: 10px;
+        width: calc(130 * var(--u));
+        margin-bottom: calc(10 * var(--u));
         background: none;
         border: none;
         padding: 0;
@@ -119,7 +146,7 @@
         left: 0;
         right: 0;
 
-        height: 3px;
+        height: calc(3 * var(--u));
 
         background: rgba(255, 255, 255, 0.06);
 
@@ -146,18 +173,19 @@
         align-items: center;
         justify-content: center;
 
-        padding: 24px;
+        padding: calc(24 * var(--u));
       }
 
       .panel {
         width: 100%;
-        max-width: 580px;
+        max-width: calc(580 * var(--u));
 
-        border: 2px solid #000000;
+        border: calc(2 * var(--u)) solid #000000;
         background: rgba(0, 0, 0, 0.45);
-        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+        box-shadow: 0 calc(24 * var(--u)) calc(60 * var(--u))
+          rgba(0, 0, 0, 0.55);
 
-        padding: 44px 46px;
+        padding: calc(44 * var(--u)) calc(46 * var(--u));
         position: relative;
       }
 
@@ -174,7 +202,7 @@
       @keyframes rise {
         from {
           opacity: 0;
-          transform: translateY(12px);
+          transform: translateY(calc(12 * var(--u)));
         }
         to {
           opacity: 1;
@@ -195,52 +223,56 @@
       .kicker {
         color: var(--pink);
 
-        font-size: 14px;
+        font-size: calc(14 * var(--u));
         font-weight: 600;
 
-        margin-bottom: 18px;
+        margin-bottom: calc(18 * var(--u));
       }
 
       .intro-title {
-        font-size: clamp(34px, 6.6vw, 56px);
+        font-size: clamp(
+          calc(34 * var(--u)),
+          calc(6.6 * var(--u) * 15.36),
+          calc(56 * var(--u))
+        );
         font-weight: 800;
 
         line-height: 1.1;
         letter-spacing: -0.03em;
 
-        margin-bottom: 22px;
+        margin-bottom: calc(22 * var(--u));
       }
 
       .intro-desc {
-        max-width: 460px;
+        max-width: calc(460 * var(--u));
 
         color: var(--mute);
 
-        font-size: 16px;
+        font-size: calc(16 * var(--u));
         line-height: 1.7;
 
-        margin-bottom: 12px;
+        margin-bottom: calc(12 * var(--u));
       }
 
       .intro-meta {
         color: var(--mute);
 
-        font-size: 14px;
+        font-size: calc(14 * var(--u));
 
-        margin-bottom: 44px;
+        margin-bottom: calc(44 * var(--u));
       }
 
       .btn-primary {
         appearance: none;
         border: none;
 
-        padding: 16px 40px;
+        padding: calc(16 * var(--u)) calc(40 * var(--u));
 
         background: var(--pink);
         color: #08070a;
 
         font-family: inherit;
-        font-size: 16px;
+        font-size: calc(16 * var(--u));
         font-weight: 700;
 
         cursor: pointer;
@@ -251,8 +283,9 @@
       }
 
       .btn-primary:hover {
-        box-shadow: 0 16px 36px rgba(255, 46, 122, 0.35);
-        transform: translateY(-2px);
+        box-shadow: 0 calc(16 * var(--u)) calc(36 * var(--u))
+          rgba(255, 46, 122, 0.35);
+        transform: translateY(calc(-2 * var(--u)));
       }
 
       .btn-primary:active {
@@ -268,13 +301,13 @@
         align-items: center;
         justify-content: space-between;
 
-        margin-bottom: 18px;
+        margin-bottom: calc(18 * var(--u));
       }
 
       .q-count {
         color: var(--mute);
 
-        font-size: 13px;
+        font-size: calc(13 * var(--u));
         font-weight: 600;
       }
 
@@ -285,20 +318,20 @@
 
       .q-toolbar-actions {
         display: flex;
-        gap: 8px;
+        gap: calc(8 * var(--u));
       }
 
       .nav-btn {
         appearance: none;
 
-        padding: 8px 14px;
+        padding: calc(8 * var(--u)) calc(14 * var(--u));
 
         background: none;
         border: 1px solid var(--line);
         color: var(--mute);
 
         font-family: inherit;
-        font-size: 12px;
+        font-size: calc(12 * var(--u));
         font-weight: 600;
 
         cursor: pointer;
@@ -318,13 +351,17 @@
       }
 
       .q-title {
-        font-size: clamp(23px, 4.2vw, 32px);
+        font-size: clamp(
+          calc(23 * var(--u)),
+          calc(4.2 * var(--u) * 15.36),
+          calc(32 * var(--u))
+        );
         font-weight: 800;
 
         line-height: 1.32;
         letter-spacing: -0.02em;
 
-        margin-bottom: 34px;
+        margin-bottom: calc(34 * var(--u));
       }
 
       .options {
@@ -340,7 +377,8 @@
         display: flex;
         align-items: center;
 
-        padding: 18px 4px 18px 20px;
+        padding: calc(18 * var(--u)) calc(4 * var(--u)) calc(18 * var(--u))
+          calc(20 * var(--u));
 
         border-bottom: 1px solid var(--line);
 
@@ -351,7 +389,7 @@
         color: var(--paper);
 
         font-family: inherit;
-        font-size: 16px;
+        font-size: calc(16 * var(--u));
         font-weight: 500;
 
         text-align: left;
@@ -371,7 +409,7 @@
         top: 0;
         bottom: 0;
 
-        width: 3px;
+        width: calc(3 * var(--u));
 
         background: var(--pink);
 
@@ -382,7 +420,7 @@
       }
 
       .option:hover {
-        padding-left: 32px;
+        padding-left: calc(32 * var(--u));
         color: var(--pink);
       }
 
@@ -392,7 +430,7 @@
 
       .option.is-picked {
         color: var(--pink);
-        padding-left: 32px;
+        padding-left: calc(32 * var(--u));
       }
 
       .option.is-picked::before {
@@ -406,57 +444,61 @@
       .result-kicker {
         color: var(--mute);
 
-        font-size: 14px;
+        font-size: calc(14 * var(--u));
         font-weight: 600;
 
-        margin-bottom: 14px;
+        margin-bottom: calc(14 * var(--u));
       }
 
       .result-subtitle {
         color: var(--pink);
 
-        font-size: 14px;
+        font-size: calc(14 * var(--u));
         font-weight: 700;
 
         text-align: left;
 
-        margin-bottom: 8px;
+        margin-bottom: calc(8 * var(--u));
       }
 
       .result-title {
-        font-size: clamp(32px, 6vw, 50px);
+        font-size: clamp(
+          calc(32 * var(--u)),
+          calc(6 * var(--u) * 15.36),
+          calc(50 * var(--u))
+        );
         font-weight: 800;
 
         line-height: 1.12;
         letter-spacing: -0.03em;
 
-        margin-bottom: 22px;
+        margin-bottom: calc(22 * var(--u));
       }
 
       .result-desc {
-        max-width: 470px;
+        max-width: calc(470 * var(--u));
 
         color: var(--mute);
 
-        font-size: 16px;
+        font-size: calc(16 * var(--u));
         line-height: 1.75;
 
-        margin-bottom: 20px;
+        margin-bottom: calc(20 * var(--u));
       }
 
       .result-secondary {
-        max-width: 470px;
+        max-width: calc(470 * var(--u));
 
-        padding: 16px 18px;
+        padding: calc(16 * var(--u)) calc(18 * var(--u));
 
         border: 1px solid var(--line);
 
         color: var(--mute);
 
-        font-size: 14px;
+        font-size: calc(14 * var(--u));
         line-height: 1.65;
 
-        margin-bottom: 40px;
+        margin-bottom: calc(40 * var(--u));
       }
 
       /* 병명(b) 글자가 아래로 치우쳐 보이는 문제 보정 */
@@ -471,20 +513,20 @@
 
       .result-actions {
         display: flex;
-        gap: 12px;
+        gap: calc(12 * var(--u));
       }
 
       .btn-ghost {
         appearance: none;
 
-        padding: 15px 30px;
+        padding: calc(15 * var(--u)) calc(30 * var(--u));
 
         background: none;
         border: 1px solid var(--line);
         color: var(--paper);
 
         font-family: inherit;
-        font-size: 15px;
+        font-size: calc(15 * var(--u));
         font-weight: 600;
 
         cursor: pointer;
@@ -577,6 +619,92 @@
         </section>
       </div>
     </div>
+
+    <!-- 커스텀 마우스 커서 -->
+    <div class="cursor" aria-hidden="true">
+      <div class="cursor-inner">
+        <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+          <!-- 바깥 30% -->
+          <path
+            fill="#fff"
+            fill-opacity="0.3"
+            fill-rule="evenodd"
+            d="M50,4 L94,100 L50,74 L6,100 Z M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z"
+          />
+          <!-- 중간 60% -->
+          <path
+            fill="#fff"
+            fill-opacity="0.6"
+            fill-rule="evenodd"
+            d="M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z"
+          />
+          <!-- 중심 100% -->
+          <path fill="#fff" d="M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z" />
+        </svg>
+      </div>
+    </div>
+
+    <style>
+      .cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .cursor-ready .cursor {
+        opacity: 1;
+      }
+
+      .cursor-inner {
+        position: absolute;
+        left: calc(-19 * var(--u));
+        top: calc(-3 * var(--u));
+        width: calc(38 * var(--u));
+        height: calc(42 * var(--u));
+
+        /* 기본 기울기 -30도 */
+        transform: rotate(-30deg);
+
+        transform-origin: 50% 8%;
+        filter: drop-shadow(0 0 calc(5 * var(--u)) rgba(255, 255, 255, 0.55))
+          drop-shadow(0 0 calc(14 * var(--u)) rgba(255, 255, 255, 0.3));
+        transition:
+          transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.3s ease;
+      }
+
+      .cursor-inner svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      .cursor-hover .cursor-inner,
+      .cursor-scan .cursor-inner {
+        /* 호버 시 -30도 유지 + 작아짐 */
+        transform: rotate(-30deg) scale(0.55);
+
+        filter: drop-shadow(0 0 calc(7 * var(--u)) rgba(255, 255, 255, 0.75))
+          drop-shadow(0 0 calc(20 * var(--u)) rgba(255, 255, 255, 0.45));
+      }
+
+      .cursor-down .cursor-inner {
+        /* 클릭 시 -30도 유지 + 작아짐 */
+        transform: rotate(-30deg) scale(0.85);
+      }
+
+      html.has-custom-cursor,
+      html.has-custom-cursor * {
+        cursor: none !important;
+      }
+    </style>
 
     <script>
       /* =====================================================
@@ -1053,133 +1181,46 @@
         .addEventListener("click", restart);
       document.getElementById("retryBtn").addEventListener("click", restart);
     </script>
+
+    <script>
+      (function () {
+        const finePointer = window.matchMedia(
+          "(hover: hover) and (pointer: fine)",
+        ).matches;
+        if (!finePointer) return;
+
+        const root = document.documentElement;
+        const cursor = document.querySelector(".cursor");
+        root.classList.add("has-custom-cursor");
+
+        window.addEventListener("mousemove", (e) => {
+          cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+          root.classList.add("cursor-ready");
+        });
+
+        document.addEventListener("mouseover", (e) => {
+          const t = e.target;
+          root.classList.remove("cursor-hover", "cursor-scan");
+          if (t.closest("[data-cursor='scan']")) {
+            root.classList.add("cursor-scan");
+          } else if (t.closest("a, button, [data-cursor]")) {
+            root.classList.add("cursor-hover");
+          }
+        });
+
+        window.addEventListener("mousedown", () =>
+          root.classList.add("cursor-down"),
+        );
+        window.addEventListener("mouseup", () =>
+          root.classList.remove("cursor-down"),
+        );
+        document.addEventListener("mouseleave", () =>
+          root.classList.remove("cursor-ready"),
+        );
+        document.addEventListener("mouseenter", () =>
+          root.classList.add("cursor-ready"),
+        );
+      })();
+    </script>
   </body>
-  <!-- 1. HTML 마크업 (보통 <body> 바로 아래에 배치) -->
-  <div class="cursor" aria-hidden="true">
-    <div class="cursor-inner">
-      <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
-        <!-- 바깥 30% -->
-        <path
-          fill="#fff"
-          fill-opacity="0.3"
-          fill-rule="evenodd"
-          d="M50,4 L94,100 L50,74 L6,100 Z M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z"
-        />
-        <!-- 중간 60% -->
-        <path
-          fill="#fff"
-          fill-opacity="0.6"
-          fill-rule="evenodd"
-          d="M50,23.8 L79.9,89.1 L50,71.4 L20.1,89.1 Z M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z"
-        />
-        <!-- 중심 100% -->
-        <path fill="#fff" d="M50,43.7 L65.8,78.2 L50,68.9 L34.2,78.2 Z" />
-      </svg>
-    </div>
-  </div>
-
-  <!-- 2. 스타일 시트 -->
-  <style>
-    .cursor {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 0;
-      z-index: 9999;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .cursor-ready .cursor {
-      opacity: 1;
-    }
-
-    .cursor-inner {
-      position: absolute;
-      left: -19px;
-      top: -3px;
-      width: 38px;
-      height: 42px;
-
-      /* ▼▼▼ [기본 기울기 코드] -30도로 설정 ▼▼▼ */
-      transform: rotate(-30deg);
-
-      transform-origin: 50% 8%;
-      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.55))
-        drop-shadow(0 0 14px rgba(255, 255, 255, 0.3));
-      transition:
-        transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-        filter 0.3s ease;
-    }
-
-    .cursor-inner svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-    }
-
-    .cursor-hover .cursor-inner,
-    .cursor-scan .cursor-inner {
-      /* ▼▼▼ [호버 시 코드] -30도 유지 + 20% 작아짐(scale 0.8) ▼▼▼ */
-      transform: rotate(-30deg) scale(0.55);
-
-      filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.75))
-        drop-shadow(0 0 20px rgba(255, 255, 255, 0.45));
-    }
-
-    .cursor-down .cursor-inner {
-      /* ▼▼▼ [클릭 시 코드] -30도 유지 + 작아짐(scale 0.85) ▼▼▼ */
-      transform: rotate(-30deg) scale(0.85);
-    }
-
-    html.has-custom-cursor,
-    html.has-custom-cursor * {
-      cursor: none !important;
-    }
-  </style>
-
-  <!-- 3. 자바스크립트 -->
-  <script>
-    (function () {
-      const finePointer = window.matchMedia(
-        "(hover: hover) and (pointer: fine)",
-      ).matches;
-      if (!finePointer) return;
-
-      const root = document.documentElement;
-      const cursor = document.querySelector(".cursor");
-      root.classList.add("has-custom-cursor");
-
-      window.addEventListener("mousemove", (e) => {
-        cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-        root.classList.add("cursor-ready");
-      });
-
-      document.addEventListener("mouseover", (e) => {
-        const t = e.target;
-        root.classList.remove("cursor-hover", "cursor-scan");
-        if (t.closest("[data-cursor='scan']")) {
-          root.classList.add("cursor-scan");
-        } else if (t.closest("a, button, [data-cursor]")) {
-          root.classList.add("cursor-hover");
-        }
-      });
-
-      window.addEventListener("mousedown", () =>
-        root.classList.add("cursor-down"),
-      );
-      window.addEventListener("mouseup", () =>
-        root.classList.remove("cursor-down"),
-      );
-      document.addEventListener("mouseleave", () =>
-        root.classList.remove("cursor-ready"),
-      );
-      document.addEventListener("mouseenter", () =>
-        root.classList.add("cursor-ready"),
-      );
-    })();
-  </script>
 </html>

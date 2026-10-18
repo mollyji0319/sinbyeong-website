@@ -1,3 +1,14 @@
+/* ==========================================
+   0. 반응형 기준값
+   - 1536 x 960 화면을 기준 무대로 삼고 화면에 맞춰 통째로 확대/축소
+   - --s, --stage-w, --stage-h 는 script.js가 화면 크기에 맞춰 갱신
+   ========================================== */
+:root {
+  --s: 1;
+  --stage-w: 1536px;
+  --stage-h: 960px;
+}
+
 /* 1. 기본 배경 및 레이아웃 */
 body,
 html {
@@ -10,13 +21,17 @@ html {
   background-image:
     linear-gradient(rgba(255, 133, 218, 0.188) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 133, 218, 0.188) 1px, transparent 1px);
-  background-size: 50px 50px;
+  background-size: calc(50px * var(--s)) calc(50px * var(--s));
 }
 
 .main-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--stage-w);
+  height: var(--stage-h);
+  transform-origin: 0 0;
+  transform: scale(var(--s));
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,8 +43,8 @@ html {
   position: absolute;
   width: 100%;
   height: 100%;
-  max-width: 100vh;
-  max-height: 100vh;
+  max-width: var(--stage-h);
+  max-height: var(--stage-h);
   object-fit: contain;
   transform-origin: center;
   transition: transform 0.1s ease-out;
@@ -319,6 +334,7 @@ body.is-hovered .bottom-right-panel {
   align-items: center;
   gap: 16px;
   width: 320px;
+  transform: scale(var(--s));
 }
 
 .loader-logo {

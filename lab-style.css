@@ -12,14 +12,19 @@
   font-style: normal;
 }
 
+/* 반응형 기준값 (1536 x 960 기준)
+   --s : 화면 배율 (lab.html의 head 스크립트가 갱신)
+   --u : 배율이 적용된 1px */
 :root {
   --accent: #ff008c;
+  --s: 1;
+  --u: calc(1px * var(--s));
 }
 
 /* 1. 전체 기본 본문은 산세리프 계열 적용 */
 body {
-  margin: 0;
-  overflow: hidden;
+  position: fixed;
+  inset: 0;
   background-color: #000;
   color: #fff;
   font-family: sans-serif;
@@ -60,7 +65,7 @@ h6,
   background-image:
     linear-gradient(to right, rgba(255, 0, 127, 0.14) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 0, 127, 0.14) 1px, transparent 1px);
-  background-size: 50px 50px;
+  background-size: calc(50 * var(--u)) calc(50 * var(--u));
   z-index: -1;
   pointer-events: none;
 }
@@ -68,9 +73,9 @@ h6,
 /* 좌측 상단 브랜딩 및 기본 정보 UI */
 #left-branding {
   position: absolute;
-  top: 30px;
-  left: 90px;
-  width: 650px;
+  top: calc(30 * var(--u));
+  left: calc(90 * var(--u));
+  width: calc(650 * var(--u));
   z-index: 2000;
   pointer-events: none;
 }
@@ -78,8 +83,8 @@ h6,
 .logo-link {
   display: inline-block;
   pointer-events: auto;
-  width: 130px;
-  margin-bottom: 10px;
+  width: calc(130 * var(--u));
+  margin-bottom: calc(10 * var(--u));
   background: none;
   border: none;
   padding: 0;
@@ -100,14 +105,14 @@ h6,
 
 .info-box-container {
   position: relative;
-  width: 600px;
+  width: calc(600 * var(--u));
   pointer-events: auto;
 }
 
 .info-main-panel {
   background-color: var(--accent);
   color: #fff;
-  padding: 10px 15px 20px;
+  padding: calc(10 * var(--u)) calc(15 * var(--u)) calc(20 * var(--u));
   position: relative;
   clip-path: polygon(0 0, 100% 0, 93% 100%, 0 100%);
   box-sizing: border-box;
@@ -116,14 +121,14 @@ h6,
 
 .info-code-badge {
   position: absolute;
-  top: -15px;
-  right: -40px;
+  top: calc(-15 * var(--u));
+  right: calc(-40 * var(--u));
   background-color: #000;
   color: #fff;
-  border: 2px solid var(--accent);
-  padding: 8px 18px 9px;
-  font-size: 14px;
-  letter-spacing: 1px;
+  border: calc(2 * var(--u)) solid var(--accent);
+  padding: calc(8 * var(--u)) calc(18 * var(--u)) calc(9 * var(--u));
+  font-size: calc(14 * var(--u));
+  letter-spacing: calc(1 * var(--u));
   transform: skewX(-30deg);
   z-index: 2005;
   transition:
@@ -133,30 +138,30 @@ h6,
 
 .info-code-badge:hover {
   transform: skewX(-30deg) scale(1.08);
-  box-shadow: 0 6px 18px rgba(255, 0, 127, 0.4);
+  box-shadow: 0 calc(6 * var(--u)) calc(18 * var(--u)) rgba(255, 0, 127, 0.4);
 }
 
 .info-title {
-  font-size: 18px;
-  margin-bottom: 6px;
-  margin-top: 3px;
+  font-size: calc(18 * var(--u));
+  margin-bottom: calc(6 * var(--u));
+  margin-top: calc(3 * var(--u));
 }
 
 .info-desc {
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   line-height: 1.4;
   opacity: 0.95;
   word-break: keep-all;
   overflow-wrap: break-word;
-  margin-right: 20px;
+  margin-right: calc(20 * var(--u));
 }
 
 .info-middle-bg {
   background-color: #fff;
   width: 100%;
-  height: 80px;
+  height: calc(80 * var(--u));
   position: relative;
-  margin-top: -70px;
+  margin-top: calc(-70 * var(--u));
   clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%);
   z-index: 1;
 }
@@ -164,16 +169,16 @@ h6,
 .info-sub-panel {
   background-color: #fff;
   color: #000;
-  padding: 5px 25px;
+  padding: calc(5 * var(--u)) calc(25 * var(--u));
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 15px;
-  font-size: 14px;
-  width: 150px;
+  gap: calc(15 * var(--u));
+  font-size: calc(14 * var(--u));
+  width: calc(150 * var(--u));
   position: relative;
-  margin-top: -9.5px;
-  margin-left: -30px;
+  margin-top: calc(-9.5 * var(--u));
+  margin-left: calc(-30 * var(--u));
   clip-path: polygon(0% 0, 90% 0, 100% 100%, 10% 100%);
   z-index: 3;
 }
@@ -181,36 +186,36 @@ h6,
 .star-rating {
   display: flex;
   align-items: center;
-  gap: 4px; /* 점 사이 간격 */
+  gap: calc(4 * var(--u)); /* 점 사이 간격 */
 }
 
 .dot-icon {
-  width: 16px; /* 점 크기 */
-  height: 16px;
+  width: calc(16 * var(--u)); /* 점 크기 */
+  height: calc(16 * var(--u));
   display: block;
 }
 /* 카드 스택 영역 */
 #panel-container {
   width: 100vw;
   height: 100vh;
-  perspective: 2000px;
+  perspective: calc(2000 * var(--u));
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 #panel-stack {
-  width: 200px;
-  height: 200px;
+  width: calc(200 * var(--u));
+  height: calc(200 * var(--u));
   transform-style: preserve-3d;
   position: relative;
-  left: 150px;
+  left: calc(150 * var(--u));
 }
 
 .panel-wrapper {
   position: absolute;
-  width: 200px;
-  height: 200px;
+  width: calc(200 * var(--u));
+  height: calc(200 * var(--u));
   transition:
     transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
     opacity 0.3s;
@@ -235,9 +240,10 @@ h6,
 
 .panel-wrapper:hover .panel {
   filter: grayscale(0);
-  transform: translateX(80px) translateY(-6px) rotateZ(-1.5deg) !important;
+  transform: translateX(calc(80 * var(--u))) translateY(calc(-6 * var(--u)))
+    rotateZ(-1.5deg) !important;
   border-color: #fff;
-  box-shadow: 0 18px 40px rgba(255, 0, 127, 0.35);
+  box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(255, 0, 127, 0.35);
 }
 
 .panel::before {
@@ -309,9 +315,9 @@ h6,
 
 .popup-layout-wrapper {
   position: relative;
-  width: 980px;
+  width: calc(980 * var(--u));
   height: auto;
-  margin-top: -60px;
+  margin-top: calc(-60 * var(--u));
   z-index: 3001;
   opacity: 0;
   transform: scale(0.92);
@@ -329,12 +335,13 @@ h6,
   position: relative;
   top: 0;
   left: 0;
-  width: 960px;
+  width: calc(960 * var(--u));
   height: auto;
-  min-height: 300px;
+  min-height: calc(300 * var(--u));
   background-color: #ffffff;
   box-sizing: border-box;
-  padding: 30px 40px 35px 45px;
+  padding: calc(30 * var(--u)) calc(40 * var(--u)) calc(35 * var(--u))
+    calc(45 * var(--u));
   z-index: 3;
   clip-path: polygon(0 0, 100% 0, 91% 100%, 0 100%);
   display: flex;
@@ -344,31 +351,31 @@ h6,
 
 .main-panel-pink-base {
   position: absolute;
-  top: -40px;
-  left: 12px;
-  width: 990px;
-  height: calc(100% + 60px);
-  min-height: 360px;
+  top: calc(-40 * var(--u));
+  left: calc(12 * var(--u));
+  width: calc(990 * var(--u));
+  height: calc(100% + 60 * var(--u));
+  min-height: calc(360 * var(--u));
   background-color: var(--accent);
   z-index: 2;
-  clip-path: polygon(170px 0px, 100% 0px, 90% 100%, 0 100%);
+  clip-path: polygon(calc(170 * var(--u)) 0px, 100% 0px, 90% 100%, 0 100%);
 }
 
 .popup-nav-tabs {
   position: absolute;
-  top: -29px;
-  left: 200px;
+  top: calc(-29 * var(--u));
+  left: calc(200 * var(--u));
   display: flex;
-  gap: 25px;
+  gap: calc(25 * var(--u));
   z-index: 6;
-  font-size: 15px;
+  font-size: calc(15 * var(--u));
   color: #fff;
 }
 
 .popup-nav-tab {
   cursor: pointer;
   position: relative;
-  padding-bottom: 4px;
+  padding-bottom: calc(4 * var(--u));
   opacity: 0.8;
   transition: opacity 0.2s;
 }
@@ -385,7 +392,7 @@ h6,
   bottom: 0;
   left: 0;
   width: 0%;
-  height: 2px;
+  height: calc(2 * var(--u));
   background-color: #fff;
   transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -397,16 +404,16 @@ h6,
 
 .popup-content-layout {
   display: flex;
-  gap: 30px;
+  gap: calc(30 * var(--u));
   align-items: flex-start;
   height: auto;
-  margin-top: 5px;
+  margin-top: calc(5 * var(--u));
 }
 
 /* 카드 이미지 - 팝업이 열릴 때 핑크 커튼이 걷히듯 좌→우로 드러남 */
 .popup-card-img {
-  width: 200px;
-  height: 200px;
+  width: calc(200 * var(--u));
+  height: calc(200 * var(--u));
   object-fit: cover;
   flex-shrink: 0;
   border-radius: 4px;
@@ -428,7 +435,7 @@ h6,
   flex-grow: 1;
   overflow: hidden;
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateY(calc(12 * var(--u)));
   transition:
     opacity 0.55s ease,
     transform 0.55s ease;
@@ -441,17 +448,17 @@ h6,
 }
 
 .popup-title-area {
-  margin-bottom: 12px;
+  margin-bottom: calc(12 * var(--u));
 }
 
 .popup-main-title {
-  font-size: 22px;
+  font-size: calc(22 * var(--u));
   color: var(--accent);
-  margin: 0 0 2px 0;
+  margin: 0 0 calc(2 * var(--u)) 0;
 }
 
 .popup-sub-title {
-  font-size: 12px;
+  font-size: calc(12 * var(--u));
   font-weight: 600;
   color: #ff008c;
   margin: 0;
@@ -460,34 +467,34 @@ h6,
 .popup-content-box {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
+  gap: calc(10 * var(--u));
+  margin-top: calc(10 * var(--u));
   max-height: none;
   overflow-y: visible;
-  padding-right: 80px;
+  padding-right: calc(80 * var(--u));
 }
 
 .popup-row {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: calc(12 * var(--u));
 }
 
 .popup-tag-badge {
   background-color: var(--accent);
   color: #fff;
-  padding: 4px 14px;
+  padding: calc(4 * var(--u)) calc(14 * var(--u));
   border-radius: 20px;
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .popup-text-val {
-  font-size: 11.5px;
+  font-size: calc(11.5 * var(--u));
   line-height: 1.5;
   color: #222;
-  margin-top: 3px;
+  margin-top: calc(3 * var(--u));
 }
 
 /* 원인 및 증상 탭 전용 스타일 */
@@ -495,55 +502,55 @@ h6,
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 25px;
+  gap: calc(25 * var(--u));
 }
 
 .symptom-section-row {
   display: flex;
   align-items: flex-start;
-  gap: 20px;
+  gap: calc(20 * var(--u));
 }
 
 .symptom-section-badge {
   background-color: var(--accent);
   color: #fff;
-  padding: 4px 14px;
+  padding: calc(4 * var(--u)) calc(14 * var(--u));
   border-radius: 20px;
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   white-space: nowrap;
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: calc(2 * var(--u));
 }
 
 .symptom-cards-container {
   display: flex;
-  gap: 15px;
+  gap: calc(15 * var(--u));
   flex-grow: 1;
 }
 
 .symptom-pink-card {
   background-color: #ffd1e8;
   border-radius: 4px;
-  padding: 18px 15px;
+  padding: calc(18 * var(--u)) calc(15 * var(--u));
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
+  gap: calc(8 * var(--u));
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
 }
 
 .symptom-card-title {
-  font-size: 14px;
+  font-size: calc(14 * var(--u));
   color: var(--accent);
   margin: 0;
 }
 
 .symptom-card-desc {
-  font-size: 10.5px;
+  font-size: calc(10.5 * var(--u));
   line-height: 1.4;
   color: #222;
   margin: 0;
@@ -552,21 +559,21 @@ h6,
 .symptom-stages-container {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: calc(15 * var(--u));
   flex-grow: 1;
 }
 
 .symptom-stage-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 * var(--u));
 }
 
 .symptom-stage-header {
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   color: var(--accent);
-  border-bottom: 1.5px solid var(--accent);
-  padding-bottom: 3px;
+  border-bottom: calc(1.5 * var(--u)) solid var(--accent);
+  padding-bottom: calc(3 * var(--u));
   transition: border-color 0.2s ease;
 }
 
@@ -575,7 +582,7 @@ h6,
 }
 
 .symptom-stage-desc {
-  font-size: 11.5px;
+  font-size: calc(11.5 * var(--u));
   color: #222;
   margin: 0;
 }
@@ -584,32 +591,32 @@ h6,
 .prescription-layout {
   display: flex;
   width: 100%;
-  gap: 30px;
+  gap: calc(30 * var(--u));
   align-items: flex-start;
   position: relative;
-  margin-top: 8px;
+  margin-top: calc(8 * var(--u));
 }
 
 .prescription-column {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: calc(20 * var(--u));
   position: relative;
 }
 
 .prescription-badge-center {
   display: flex;
   justify-content: center;
-  margin-bottom: 15px;
+  margin-bottom: calc(15 * var(--u));
 }
 
 .prescription-badge {
   background-color: var(--accent);
   color: #fff;
-  padding: 4px 14px;
+  padding: calc(4 * var(--u)) calc(14 * var(--u));
   border-radius: 20px;
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   text-align: center;
   display: inline-block;
 }
@@ -617,65 +624,65 @@ h6,
 .prescription-row-item {
   display: flex;
   align-items: flex-start;
-  gap: 15px;
+  gap: calc(15 * var(--u));
 }
 
 .prescription-sub-badge {
   background-color: transparent;
   color: var(--accent);
-  font-size: 13px;
+  font-size: calc(13 * var(--u));
   white-space: nowrap;
   flex-shrink: 0;
-  width: 110px;
+  width: calc(110 * var(--u));
   text-align: left;
 }
 
 .prescription-content-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 * var(--u));
 }
 
 .prescription-people-group {
   display: flex;
   align-items: center;
-  gap: 3px;
-  margin: 10px 0;
+  gap: calc(3 * var(--u));
+  margin: calc(10 * var(--u)) 0;
 }
 
 .person-icon {
-  width: 32px;
-  height: 48px;
+  width: calc(32 * var(--u));
+  height: calc(48 * var(--u));
   object-fit: contain;
   transition: transform 0.25s ease;
 }
 
 .prescription-people-group:hover .person-icon {
-  transform: translateY(-3px);
+  transform: translateY(calc(-3 * var(--u)));
 }
 
 .prescription-divider {
-  width: 2px;
+  width: calc(2 * var(--u));
   background-color: var(--accent);
   align-self: stretch;
-  margin: 0 10px;
+  margin: 0 calc(10 * var(--u));
 }
 
 .close-btn {
   position: absolute;
-  top: -15px;
-  right: -40px;
+  top: calc(-15 * var(--u));
+  right: calc(-40 * var(--u));
   width: auto;
   height: auto;
   background-color: #000;
   color: #fff;
-  border: 2px solid var(--accent);
-  padding: 8px 18px;
+  border: calc(2 * var(--u)) solid var(--accent);
+  padding: calc(8 * var(--u)) calc(18 * var(--u));
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 14px;
-  letter-spacing: 1px;
+  font-size: calc(14 * var(--u));
+  letter-spacing: calc(1 * var(--u));
   transform: skewX(-18deg);
   cursor: pointer;
   z-index: 2005;
@@ -703,6 +710,6 @@ h6,
     display: none;
   }
   .panel-wrapper:hover .panel {
-    transform: translateX(80px) !important;
+    transform: translateX(calc(80 * var(--u))) !important;
   }
 }
