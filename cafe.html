@@ -43,8 +43,8 @@
 
       /* SEBANG Gothic OTF 폰트 정의 */
       @font-face {
-        font-family: "SEBANG Gothic";
-        src: url("SEBANG Gothic OTF.otf") format("opentype");
+        font-family: "SebangGothic";
+        src: url("SebangGothic.otf") format("opentype");
         font-weight: 400;
         font-style: normal;
       }
@@ -64,7 +64,7 @@
         height: 100%;
         background-color: #000000;
         color: #ff008c;
-        font-family: "SEBANG Gothic", "Noto Sans KR", sans-serif;
+        font-family: "SebangGothic", "Noto Sans KR", sans-serif;
         font-weight: 400;
         overflow: hidden;
         overscroll-behavior: none;
@@ -182,7 +182,7 @@
 
     <div id="left-branding">
       <button class="logo-link" onclick="window.location.href = 'index.html'">
-        <img src="로고-04.png" alt="신병 연구소 로고" class="logo-img" />
+        <img src="logo04.png" alt="신병 연구소 로고" class="logo-img" />
       </button>
     </div>
 
@@ -295,7 +295,7 @@
         textMuted: "#8F8B93",
       };
 
-      const fontSebang = "'SEBANG Gothic', sans-serif";
+      const SebangGothic = "'SebangGothic', sans-serif";
       const fontNoto = "'Noto Sans KR', sans-serif";
       const fontMono = "'JetBrains Mono', 'SF Mono', 'Consolas', monospace";
 
@@ -403,7 +403,7 @@
             >
               <h2
                 style={{
-                  fontFamily: fontSebang,
+                  fontFamily: SebangGothic,
                   fontSize: u(26),
                   fontWeight: 700,
                   color: colors.text,
@@ -452,7 +452,7 @@
                     >
                       <span
                         style={{
-                          fontFamily: fontSebang,
+                          fontFamily: SebangGothic,
                           fontSize: u(13),
                           fontWeight: 400,
                           color: colors.bg,
@@ -465,7 +465,7 @@
                       </span>
                       <span
                         style={{
-                          fontFamily: fontSebang,
+                          fontFamily: SebangGothic,
                           fontSize: u(13),
                           fontWeight: 400,
                           color: colors.textMuted,
@@ -541,7 +541,7 @@
 
         const labelStyle = {
           display: "block",
-          fontFamily: fontSebang,
+          fontFamily: SebangGothic,
           fontSize: u(12),
           fontWeight: 400,
           color: colors.textMuted,
@@ -567,7 +567,7 @@
             >
               <h2
                 style={{
-                  fontFamily: fontSebang,
+                  fontFamily: SebangGothic,
                   fontSize: u(26),
                   fontWeight: 700,
                   color: colors.text,
@@ -642,7 +642,7 @@
                   padding: `${u(13)} 0`,
                   border: "none",
                   borderRadius: 4,
-                  fontFamily: fontSebang,
+                  fontFamily: SebangGothic,
                   fontSize: u(15),
                   fontWeight: 700,
                   cursor: isValid ? "pointer" : "not-allowed",
@@ -716,7 +716,7 @@
               display: "flex",
               padding: `${u(75)} ${u(90)} ${u(60)} ${u(90)}`,
               background: "transparent",
-              fontFamily: fontSebang,
+              fontFamily: SebangGothic,
               gap: u(24),
             }}
           >

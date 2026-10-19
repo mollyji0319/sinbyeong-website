@@ -51,7 +51,7 @@
         color: #ff008c;
         /* 폰트: SEBANG Gothic (없을 경우 순서대로 대체) */
         font-family:
-          "SEBANG Gothic", "SEBANG Gothic Bold", "Chakra Petch", sans-serif;
+          "SebangGothic", "SebangGothic-Bold", "Chakra Petch", sans-serif;
         font-size: calc(20 * var(--u));
         letter-spacing: 0.5px;
         opacity: 0;
@@ -89,7 +89,7 @@
 
     <div id="left-branding">
       <a href="index.html" class="logo-link">
-        <img src="로고-04.png" alt="Patho Lab Logo" class="logo-img" />
+        <img src="logo04.png" alt="Patho Lab Logo" class="logo-img" />
       </a>
       <div class="info-box-container">
         <div class="info-code-badge" id="info-code">??</div>
@@ -665,7 +665,7 @@
         },
 
         /* ===================== 신규 추가 5개 ===================== */
-        "향수병.webp": {
+        "smell.webp": {
           header: {
             title: "특정 시절 이상화 현실 부적응 장애",
             desc: "지나간 특정 시절을 통째로 이상향으로 박제해두고, 현재의 일상을 결핍 상태로 여기며 지금을 온전히 살지 못하는 병입니다.",
@@ -717,7 +717,7 @@
               "그 시절과 지금은 우열의 관계가 아니라 이어진 시간임을 인정하며, 오늘 있었던 일 한 줄을 쓰는 일지 작성.",
           },
         },
-        "도끼.webp": {
+        "dokki.webp": {
           header: {
             title: "관계적 아전인수 및 호감 망상 증후군",
             desc: "주변 사람들이 자신에게 호감이 있다고 근거 없이 착각하며, 타인의 모든 행동을 '구애'의 신호로 해석하는 현상입니다.",
@@ -768,7 +768,7 @@
               "오늘 '나를 좋아해서'라고 해석했던 타인의 친절이나 눈맞춤을 적고, 그 행동에 대한 다른 합리적 설명 세 가지를 나란히 기록하기.",
           },
         },
-        "선비.webp": {
+        "sunbi.webp": {
           header: {
             title: "허위 중립 위장 및 가짜 냉철함 장애",
             desc: "명백히 한쪽 책임이 큰 사안을 '양쪽 다 똑같다'며 억지로 저울질해 자신을 냉철한 사람으로 포장하려는 병입니다.",
@@ -872,7 +872,7 @@
               "오늘 나의 행동 중 MBTI 유형과 어긋났던 순간을 적고, 유형으로 설명되지 않는 나와 타인의 모습을 구체적으로 기록하기.",
           },
         },
-        "리셋.webp": {
+        "reset.webp": {
           header: {
             title: "자아 초기화 반복 강박 장애",
             desc: "관계나 상황에 마찰이 생기면 개선 대신 전면 초기화를 택하며, 쌓아온 자신을 지우고 새로운 배역으로 갈아타려 하는 병입니다.",
@@ -946,11 +946,11 @@
         "fru.webp",
         "joong2.webp",
         "sns.webp",
-        "향수병.webp",
-        "도끼.webp",
-        "선비.webp",
+        "smell.webp",
+        "dokki.webp",
+        "sunbi.webp",
         "mbti.webp",
-        "리셋.webp",
+        "reset.webp",
       ];
       // 이미지 개수에 맞춰 자동 계산 (각 이미지가 2번씩 반복)
       const num = imgs.length * 2;
@@ -971,7 +971,7 @@
         let html = "";
         for (let i = 1; i <= 5; i++) {
           const filled = i <= level;
-          html += `<img src="${filled ? "점1.png" : "점2.png"}" class="dot-icon" alt="${filled ? "채워진 점" : "빈 점"}" />`;
+          html += `<img src="${filled ? "jum1.png" : "jum2.png"}" class="dot-icon" alt="${filled ? "채워진 점" : "빈 점"}" />`;
         }
         box.innerHTML = html;
       }
@@ -1139,9 +1139,9 @@
           const level = data.header.infectionLevel;
           for (let i = 1; i <= 5; i++) {
             if (i <= level) {
-              peopleHtml += `<img src="사람-05.png" class="person-icon" alt="색칠된 사람">`;
+              peopleHtml += `<img src="hito-05.png" class="person-icon" alt="색칠된 사람">`;
             } else {
-              peopleHtml += `<img src="사람-06.png" class="person-icon" alt="빈 사람">`;
+              peopleHtml += `<img src="hito-06.png" class="person-icon" alt="빈 사람">`;
             }
           }
 

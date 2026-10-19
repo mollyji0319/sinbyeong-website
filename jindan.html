@@ -550,7 +550,7 @@
 
     <div id="left-branding">
       <button class="logo-link" onclick="window.location.href = 'index.html'">
-        <img src="로고-04.png" alt="신병 연구소 로고" class="logo-img" />
+        <img src="logo04.png" alt="신병 연구소 로고" class="logo-img" />
       </button>
     </div>
 
@@ -565,11 +565,11 @@
           <h1 class="intro-title">나는 지금<br />무슨 병에 걸렸을까?</h1>
 
           <p class="intro-desc">
-            질문 15개에 솔직하게 답하면, 요즘 나에게 가장 가까운 증상을
+            질문 10개에 솔직하게 답하면, 요즘 나에게 가장 가까운 증상을
             찾아드려요. 정답은 없으니 편하게 골라보세요.
           </p>
 
-          <p class="intro-meta">문항 15개 · 약 1분 소요</p>
+          <p class="intro-meta">문항 10개 · 약 1분 소요</p>
 
           <button class="btn-primary" id="startBtn" type="button">
             테스트 시작
@@ -582,7 +582,7 @@
         <section class="screen" id="screen-question">
           <div class="q-toolbar">
             <p class="q-count">
-              <b id="qIndex">1</b> / <span id="qTotal">15</span>
+              <b id="qIndex">1</b> / <span id="qTotal">10</span>
             </p>
 
             <div class="q-toolbar-actions">
@@ -776,12 +776,15 @@
       };
 
       /* =====================================================
-     문항 데이터
+     문항 데이터 (총 15개 중 매 회차 10개가 랜덤 출제됨)
      - 선택지 문구는 증상의 키워드(순위/하늘/마스크 등)를
        그대로 쓰지 않고, 행동·장면 위주로 다듬었어요.
      - 무증상(X) 선택지도 다른 선택지와 같은 길이/구체성의
        '장면'으로 써서, 혼자 밋밋해 보이지 않게 했어요.
   ===================================================== */
+
+      // 한 번의 테스트에서 출제할 문항 수
+      const QUESTION_COUNT = 10;
 
       const QUESTIONS = [
         {
@@ -1012,13 +1015,16 @@
       }
 
       // 한 번의 테스트 동안 유지될 "덱"을 만든다.
-      // 문항 순서와 각 문항의 선택지 순서를 모두 섞되,
+      // 전체 문항을 섞은 뒤 앞에서 QUESTION_COUNT개만 뽑고,
+      // 각 문항의 선택지 순서도 섞는다.
       // '이전' 버튼으로 돌아와도 같은 순서가 보이도록 덱에 고정해둔다.
       function buildDeck() {
-        return shuffle(QUESTIONS).map((q) => ({
-          title: q.title,
-          options: shuffle(q.options),
-        }));
+        return shuffle(QUESTIONS)
+          .slice(0, QUESTION_COUNT)
+          .map((q) => ({
+            title: q.title,
+            options: shuffle(q.options),
+          }));
       }
 
       /* =====================================================
