@@ -1712,5 +1712,42 @@
         );
       })();
     </script>
+
+    <script>
+      /* =========================================================
+     4) 3분간 무반응 시 메인(index.html)으로 자동 이동
+  ========================================================= */
+      (function () {
+        const IDLE_LIMIT = 3 * 60 * 1000; // 3분 (ms)
+        const REDIRECT_URL = "index.html";
+        let idleTimer;
+
+        function goHome() {
+          window.location.href = REDIRECT_URL;
+        }
+
+        function resetTimer() {
+          clearTimeout(idleTimer);
+          idleTimer = setTimeout(goHome, IDLE_LIMIT);
+        }
+
+        // 사용자 반응으로 간주할 이벤트들
+        [
+          "mousemove",
+          "mousedown",
+          "mouseup",
+          "click",
+          "wheel",
+          "keydown",
+          "touchstart",
+          "touchmove",
+          "scroll",
+        ].forEach((evt) =>
+          window.addEventListener(evt, resetTimer, { passive: true }),
+        );
+
+        resetTimer();
+      })();
+    </script>
   </body>
 </html>
